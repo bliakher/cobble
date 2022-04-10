@@ -1,4 +1,5 @@
 #include "SDL2/SDL.h"
+#include <SDL2_image/SDL_image.h>
 //#include "SDL2_ttf/SDL_ttf.h"
 
 #include <stdio.h>
@@ -48,6 +49,18 @@ std::string getInfo() {
 //    //printf("[ERROR] Unknown error in drawText(): %s\n", TTF_GetError()); return 1;
 //}
 
+SDL_Surface* loadImage(std::string path, SDL_Surface* screenSurface) {
+    SDL_Surface* img = IMG_Load(path.c_str());
+    if (img == NULL) {
+        fprintf(stderr, "could not load image: %s\n", IMG_GetError());
+        return NULL;
+    }
+    SDL_Surface* optimizedImg = SDL_ConvertSurface(img, screenSurface->format, 0);
+    if (optimizedImg == NULL) fprintf(stderr, "could not optimize image: %s\n", SDL_GetError());
+    SDL_FreeSurface(img);
+    return optimizedImg;
+}
+
 //---------------------------------------------------------------------
 //  MAIN
 //---------------------------------------------------------------------
@@ -70,6 +83,8 @@ int main(int argc, char* args[]) {
 
     screenSurface = SDL_GetWindowSurface(window);
     SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0x80, 0x80, 0x80));     // Set a gray background canvas
+    auto img = loadImage("/Users/evgeniagolubeva/Downloads/statni_znak.png", screenSurface);
+    SDL_BlitSurface(img, NULL, screenSurface, NULL);
     SDL_UpdateWindowSurface(window);
 
     //-----------------------------------------------------
