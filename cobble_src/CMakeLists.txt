@@ -3,10 +3,22 @@ project(cobble_src)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_library(sdl2 SDL2)
+# add extra include directories
+include_directories(/usr/local/include)
+# add extra lib directories from the library folder
+link_directories(/usr/local/lib)
+
+#find_library(sdl2 SDL2)
+# link from framework
 find_library(sdl2_image SDL2_image)
+find_library(sdl2_gfx SDL2_gfx)
 
-add_executable(cobble_src main.cpp)
+# link from /usr/local/include
+find_package(SDL2 REQUIRED)
 
-target_link_libraries(cobble_src ${sdl2})
-target_link_libraries(cobble_src ${sdl2_image})
+add_executable(cobble_src main.cpp projective_plane.h projective_plane.cpp cobble.h)
+
+target_link_libraries(cobble_src SDL2)
+
+target_link_libraries(cobble_src ${sdl2_image} ${sdl2_gfx})
+
