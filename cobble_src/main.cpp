@@ -1,14 +1,19 @@
 #include "SDL2/SDL.h"
-#include <SDL2_image/SDL_image.h>
+#include "SDL2/SDL_image.h"
 //#include "SDL2_ttf/SDL_ttf.h"
+#include "SDL2/SDL2_gfxPrimitives.h"
 
 #include <stdio.h>
 #include <cstdio>
 #include <string>
 #include <sstream>
+//#include <vector>
+//#include <iostream>
 
-#define SCREEN_WIDTH    640
-#define SCREEN_HEIGHT   480
+#include "projective_plane.h"
+
+#define SCREEN_WIDTH    800
+#define SCREEN_HEIGHT   600
 #define WINDOW_TITLE    "Hello SDL2!"
 #define WINDOW_TEXT     "Hello World!"
 
@@ -61,6 +66,24 @@ SDL_Surface* loadImage(std::string path, SDL_Surface* screenSurface) {
     return optimizedImg;
 }
 
+void drawBackGround(SDL_Renderer* renderer, int width, int height) {
+    SDL_SetRenderDrawColor(renderer, 255, 255, 128, 255); // light yellow
+    auto windowRect = SDL_Rect{0, 0, width, height};
+    SDL_RenderFillRect(renderer, &windowRect); // fill background
+    int padding = 5;
+    int circleWidth = width / 2 - 2 * padding;
+    int radius = circleWidth / 2;
+    int circle1x = padding + radius;
+    int circle2x = circle1x + circleWidth + 2 * padding;
+    int circley = height - padding - radius;
+    filledCircleRGBA(renderer, circle1x, circley, radius, 255, 255, 255, 255); // first white circle
+    circleRGBA(renderer, circle1x, circley, radius, 0, 0, 0, 255); // first circle black border
+
+    filledCircleRGBA(renderer, circle2x, circley, radius, 255, 255, 255, 255); // second white circle
+    circleRGBA(renderer, circle2x, circley, radius, 0, 0, 0, 255); // second circle black border
+
+}
+
 //---------------------------------------------------------------------
 //  MAIN
 //---------------------------------------------------------------------
@@ -69,6 +92,7 @@ int main(int argc, char* args[]) {
     SDL_Window* window = NULL;                      // The window we are rendering to
     SDL_Surface* screenSurface = NULL;              // The surface contained by the window
     SDL_Event wEvent;                               // Enable the Window Event handler...
+    SDL_Renderer *renderer = NULL;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf( "[ERROR] SDL could not initialize! SDL Error: %s\n", SDL_GetError());
@@ -80,12 +104,23 @@ int main(int argc, char* args[]) {
         printf( "[ERROR] Window could not be created! SDL Error: %s\n", SDL_GetError());
         return 1;
     }
+//    screenSurface = SDL_GetWindowSurface(window);
 
-    screenSurface = SDL_GetWindowSurface(window);
-    SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0x80, 0x80, 0x80));     // Set a gray background canvas
-    auto img = loadImage("/Users/evgeniagolubeva/Downloads/statni_znak.png", screenSurface);
-    SDL_BlitSurface(img, NULL, screenSurface, NULL);
-    SDL_UpdateWindowSurface(window);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (renderer == NULL)
+    {
+        SDL_DestroyWindow(window);
+        printf ("SDL_CreateRenderer Error: %s", SDL_GetError());
+        SDL_Quit();
+        return 3;
+    }
+
+//    auto img = loadImage("/Users/evgeniagolubeva/Downloads/statni_znak.png", screenSurface);
+//    SDL_BlitSurface(img, NULL, screenSurface, NULL);
+
+    drawBackGround(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+    SDL_RenderPresent(renderer);
+//    SDL_UpdateWindowSurface(window);
 
     //-----------------------------------------------------
     // Draw the Text
@@ -127,8 +162,8 @@ int main(int argc, char* args[]) {
         while(SDL_PollEvent(&wEvent)) {
             switch (wEvent.type) {
                 case SDL_QUIT:              eQuit = true; break;
-                case SDL_KEYDOWN:           eQuit = true; break;
-                case SDL_MOUSEBUTTONDOWN:   eQuit = true; break;
+//                case SDL_KEYDOWN:           eQuit = true; break;
+//                case SDL_MOUSEBUTTONDOWN:   eQuit = true; break;
                 case SDL_WINDOWEVENT_CLOSE: eQuit = true; break;
                 default:
                     //SDL_Log("Window %d got unknown event %d\n", wEvent.window.windowID, wEvent.window.event);
@@ -138,6 +173,7 @@ int main(int argc, char* args[]) {
         SDL_Delay(100); // Keep < 500 [ms]
     }
 
+    SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
     return 0;
