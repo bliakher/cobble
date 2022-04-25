@@ -102,8 +102,15 @@ void Deck::Init(const vector<Image> &images, const vector<vector<int>> &cardTemp
     }
 }
 
-unique_ptr<Card> Deck::GetNextCard() {
-    //Card card = cards_[topCardIdx_];
+void Deck::Shuffle() {
+    // Fisher–Yates shuffle
+    for (int i = cards_.size() - 1; i >= 1; i--) {
+        int j = rand() % (i + 1);
+        swap(cards_[i], cards_[j]);
+    }
+}
+
+shared_ptr<Card> Deck::GetNextCard() {
     int returnIdx = topCardIdx_;
     topCardIdx_++; // ToDo: check if there are cards left
     return make_shared<Card>(cards_[returnIdx]);
