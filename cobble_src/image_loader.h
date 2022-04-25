@@ -17,7 +17,9 @@ public:
     std::string FilePath_;
     std::string Name_;
     SDL_Texture* Texture_;
+    SDL_Surface* Surface_;
     void Load(SDL_Renderer* renderer);
+    bool operator==(const Image& image);
 };
 
 class ImageLoader {

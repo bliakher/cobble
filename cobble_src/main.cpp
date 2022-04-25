@@ -10,7 +10,9 @@
 //#include <vector>
 //#include <iostream>
 
+#include "image_loader.h"
 #include "projective_plane.h"
+#include "cobble.h"
 
 #define SCREEN_WIDTH    800
 #define SCREEN_HEIGHT   600
@@ -54,35 +56,6 @@ std::string getInfo() {
 //    //printf("[ERROR] Unknown error in drawText(): %s\n", TTF_GetError()); return 1;
 //}
 
-SDL_Surface* loadImage(std::string path, SDL_Surface* screenSurface) {
-    SDL_Surface* img = IMG_Load(path.c_str());
-    if (img == NULL) {
-        fprintf(stderr, "could not load image: %s\n", IMG_GetError());
-        return NULL;
-    }
-    SDL_Surface* optimizedImg = SDL_ConvertSurface(img, screenSurface->format, 0);
-    if (optimizedImg == NULL) fprintf(stderr, "could not optimize image: %s\n", SDL_GetError());
-    SDL_FreeSurface(img);
-    return optimizedImg;
-}
-
-void drawBackGround(SDL_Renderer* renderer, int width, int height) {
-    SDL_SetRenderDrawColor(renderer, 255, 255, 128, 255); // light yellow
-    auto windowRect = SDL_Rect{0, 0, width, height};
-    SDL_RenderFillRect(renderer, &windowRect); // fill background
-    int padding = 5;
-    int circleWidth = width / 2 - 2 * padding;
-    int radius = circleWidth / 2;
-    int circle1x = padding + radius;
-    int circle2x = circle1x + circleWidth + 2 * padding;
-    int circley = height - padding - radius;
-    filledCircleRGBA(renderer, circle1x, circley, radius, 255, 255, 255, 255); // first white circle
-    circleRGBA(renderer, circle1x, circley, radius, 0, 0, 0, 255); // first circle black border
-
-    filledCircleRGBA(renderer, circle2x, circley, radius, 255, 255, 255, 255); // second white circle
-    circleRGBA(renderer, circle2x, circley, radius, 0, 0, 0, 255); // second circle black border
-
-}
 
 //---------------------------------------------------------------------
 //  MAIN
@@ -115,11 +88,25 @@ int main(int argc, char* args[]) {
         return 3;
     }
 
-//    auto img = loadImage("/Users/evgeniagolubeva/Downloads/statni_znak.png", screenSurface);
-//    SDL_BlitSurface(img, NULL, screenSurface, NULL);
 
-    drawBackGround(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-    SDL_RenderPresent(renderer);
+//    ProjectivePlane plane{2};
+//    auto lines = plane.Generate();
+//    auto linesIdx = plane.ConvertPointsToIdx(lines);
+//    ImageLoader loader{"/Users/evgeniagolubeva/cobble/cobble_src/data/pictures"};
+//    loader.Load(renderer);
+//
+//    Deck deck {};
+//    deck.Init(loader.Images_, linesIdx);
+//    auto card1 = deck.GetNextCard();
+//    auto card2 = deck.GetNextCard();
+//    drawBackground(renderer, SCREEN_WIDTH, SCREEN_HEIGHT, card1, card2);
+
+    GameWindow gameWindow{SCREEN_WIDTH, SCREEN_HEIGHT, renderer};
+    gameWindow.Init();
+    gameWindow.Draw();
+
+
+
 //    SDL_UpdateWindowSurface(window);
 
     //-----------------------------------------------------
@@ -161,12 +148,20 @@ int main(int argc, char* args[]) {
     while (!eQuit) {
         while(SDL_PollEvent(&wEvent)) {
             switch (wEvent.type) {
-                case SDL_QUIT:              eQuit = true; break;
+                case SDL_QUIT:
+                    eQuit = true;
+                    break;
 //                case SDL_KEYDOWN:           eQuit = true; break;
-//                case SDL_MOUSEBUTTONDOWN:   eQuit = true; break;
-                case SDL_WINDOWEVENT_CLOSE: eQuit = true; break;
+                case SDL_MOUSEBUTTONDOWN:
+                    int mouseX, mouseY;
+                    SDL_GetMouseState(&mouseX, &mouseY);
+                    gameWindow.UpdateOnClick(mouseX, mouseY);
+                    break;
+                case SDL_WINDOWEVENT_CLOSE:
+                    eQuit = true;
+                    break;
                 default:
-                    //SDL_Log("Window %d got unknown event %d\n", wEvent.window.windowID, wEvent.window.event);
+//                    SDL_Log("Window %d got unknown event %d\n", wEvent.window.windowID, wEvent.window.event);
                     break;
             }
         }

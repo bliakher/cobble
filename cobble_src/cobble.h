@@ -15,6 +15,7 @@ class Card {
 public:
     std::vector<Image> Images_{};
     void AddImage(const Image& image);
+    std::string GetCommon(const std::shared_ptr<Card> card);
 private:
 
 
@@ -23,12 +24,14 @@ private:
 class RenderedCard {
 public:
     RenderedCard() = default;
-    RenderedCard(std::unique_ptr<Card> card, int centerX, int centerY, int radius)
+    RenderedCard(std::shared_ptr<Card> card, int centerX, int centerY, int radius)
         : card_(std::move(card)), centerX_(centerX), centerY_(centerY), radius_(radius) {}
     void Draw(SDL_Renderer *renderer);
-    std::unique_ptr<Image> GetClickedImage(int mouseX, int mouseY);
+    std::shared_ptr<Image> GetClickedImage(int mouseX, int mouseY);
+    std::string GetCommon(const RenderedCard& card);
+    std::shared_ptr<Card> GetCard();
 private:
-    std::unique_ptr<Card> card_;
+    std::shared_ptr<Card> card_;
     int centerX_;
     int centerY_;
     int radius_;
@@ -41,7 +44,7 @@ public:
     Deck(): topCardIdx_(0) {}
     void Init(const std::vector<Image>& images, const std::vector<std::vector<int>>& cardTemplates);
     void Shuffle();
-    std::unique_ptr<Card> GetNextCard();
+    std::shared_ptr<Card> GetNextCard();
 private:
     std::vector<Card> cards_{};
     int topCardIdx_;
@@ -50,15 +53,17 @@ private:
 
 class GameWindow {
 public:
-    GameWindow(int width, int height)
-        : Width_(width), Height_(height), leftCardCenterX_(0), rightCardCenterX_(0), cardCenterY_(0), cardRadius_(0) {}
-    void Init(SDL_Renderer* renderer);
-    void Draw(SDL_Renderer* renderer);
+    GameWindow(int width, int height, SDL_Renderer* renderer)
+        : Width_(width), Height_(height), renderer_(renderer), leftCardCenterX_(0), rightCardCenterX_(0),
+        cardCenterY_(0), cardRadius_(0) {}
+    void Init();
+    void Draw();
     void UpdateOnClick(int mouseX, int mouseY);
     int Width_;
     int Height_;
 private:
     Deck deck_{};
+    SDL_Renderer* renderer_;
     RenderedCard leftCard_;
     RenderedCard rightCard_;
     const int cardPadding_ = 10;
@@ -66,6 +71,8 @@ private:
     int rightCardCenterX_;
     int cardCenterY_;
     int cardRadius_;
+    std::string result_;
+    void prepareNextCard();
 };
 
 

@@ -27,14 +27,20 @@ void Image::Load(SDL_Renderer* renderer) {
     SDL_Texture *texture = NULL;
     SDL_Surface *surface = IMG_Load(FilePath_.c_str());
     if (surface) {
+        Surface_ = surface;
         texture = SDL_CreateTextureFromSurface(renderer, surface);
-        SDL_FreeSurface(surface);
+//        SDL_FreeSurface(surface);
     }
     Texture_ = texture;
     if (Texture_ == NULL) {
         cout << Name_ << ": texture null" << endl;
         throw std::exception{};
     }
+}
+
+// images are identical, if their names are identical
+bool Image::operator==(const Image &image) {
+    return Name_ == image.Name_;
 }
 
 void ImageLoader::Load(SDL_Renderer *renderer) {
