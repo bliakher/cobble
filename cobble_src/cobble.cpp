@@ -116,6 +116,9 @@ shared_ptr<Card> Deck::GetNextCard() {
     return make_shared<Card>(cards_[returnIdx]);
 }
 
+int Deck::GetRemainingCardsCount() {
+    return cards_.size() - topCardIdx_;
+}
 
 
 void GameWindow::Init() {
@@ -129,8 +132,8 @@ void GameWindow::Init() {
     deck_.Shuffle();
     int circleWidth = Width_ / 2 - 2 * cardPadding_;
     cardRadius_ = circleWidth / 2;
-    leftCardCenterX_ = cardPadding_ + cardRadius_;
-    rightCardCenterX_ = leftCardCenterX_ + circleWidth + 2 * cardPadding_;
+    leftCardCenterX_ = 2 * cardPadding_ + cardRadius_;
+    rightCardCenterX_ = leftCardCenterX_ + circleWidth + cardPadding_;
     cardCenterY_ = Height_ - cardPadding_ - cardRadius_;
     shared_ptr<Card> left = deck_.GetNextCard();
     shared_ptr<Card> right = deck_.GetNextCard();
@@ -140,15 +143,7 @@ void GameWindow::Init() {
 }
 
 void GameWindow::Draw() {
-    SDL_SetRenderDrawColor(renderer_, 255, 255, 128, 255); // light yellow
-    auto windowRect = SDL_Rect{0, 0, Width_, Height_};
-    SDL_RenderFillRect(renderer_, &windowRect); // fill background
-
-    filledCircleRGBA(renderer_, leftCardCenterX_, cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
-    circleRGBA(renderer_, leftCardCenterX_, cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
-
-    filledCircleRGBA(renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 255, 255, 255, 255); // second white circle
-    circleRGBA(renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 0, 0, 0, 255); // second circle black border
+    drawBackground();
 
     // draw pictures on the cards
     leftCard_.Draw(renderer_);
@@ -172,7 +167,6 @@ void GameWindow::UpdateOnClick(int mouseX, int mouseY) {
     if (image->Name_ == result_) {
         cout << "result: " << result_ << endl;
         prepareNextCard();
-        Draw();
     }
 
 }
@@ -183,4 +177,21 @@ void GameWindow::prepareNextCard() {
     leftCard_ = RenderedCard{newLeft, leftCardCenterX_, cardCenterY_, cardRadius_};
     rightCard_ = RenderedCard{newRight, rightCardCenterX_, cardCenterY_, cardRadius_};
     result_ = leftCard_.GetCommon(rightCard_);
+}
+
+void GameWindow::drawBackground() {
+    SDL_SetRenderDrawColor(renderer_, 255, 255, 128, 255); // light yellow
+    auto windowRect = SDL_Rect{0, 0, Width_, Height_};
+    SDL_RenderFillRect(renderer_, &windowRect); // fill background
+
+    // display outline of the deck under the left card
+    int deckCount = deck_.GetRemainingCardsCount();
+    int outlineCount = deckCount >= 4 ? 4 : deckCount;
+    for (int i = outlineCount; i >= 0; i--) {
+        filledCircleRGBA(renderer_, (leftCardCenterX_ - (cardPadding_ / 4) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
+        circleRGBA(renderer_, (leftCardCenterX_ - (cardPadding_ / 4) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
+    }
+
+    filledCircleRGBA(renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 255, 255, 255, 255); // second white circle
+    circleRGBA(renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 0, 0, 0, 255); // second circle black border
 }

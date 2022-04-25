@@ -45,6 +45,7 @@ public:
     void Init(const std::vector<Image>& images, const std::vector<std::vector<int>>& cardTemplates);
     void Shuffle();
     std::shared_ptr<Card> GetNextCard();
+    int GetRemainingCardsCount();
 private:
     std::vector<Card> cards_{};
     int topCardIdx_;
@@ -66,13 +67,14 @@ private:
     SDL_Renderer* renderer_;
     RenderedCard leftCard_;
     RenderedCard rightCard_;
-    const int cardPadding_ = 10;
+    const int cardPadding_ = 25;
     int leftCardCenterX_;
     int rightCardCenterX_;
     int cardCenterY_;
     int cardRadius_;
     std::string result_;
     void prepareNextCard();
+    void drawBackground();
 };
 
 

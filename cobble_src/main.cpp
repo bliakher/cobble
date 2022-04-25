@@ -156,6 +156,7 @@ int main(int argc, char* args[]) {
                     int mouseX, mouseY;
                     SDL_GetMouseState(&mouseX, &mouseY);
                     gameWindow.UpdateOnClick(mouseX, mouseY);
+                    gameWindow.Draw();
                     break;
                 case SDL_WINDOWEVENT_CLOSE:
                     eQuit = true;
