@@ -1,6 +1,6 @@
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
-//#include "SDL2_ttf/SDL_ttf.h"
+#include "SDL2/SDL_ttf.h"
 #include "SDL2/SDL2_gfxPrimitives.h"
 
 #include <stdio.h>
@@ -10,13 +10,11 @@
 //#include <vector>
 //#include <iostream>
 
-#include "image_loader.h"
-#include "projective_plane.h"
 #include "cobble.h"
 
 #define SCREEN_WIDTH    800
 #define SCREEN_HEIGHT   600
-#define WINDOW_TITLE    "Hello SDL2!"
+#define WINDOW_TITLE    "Cobble"
 #define WINDOW_TEXT     "Hello World!"
 
 
@@ -30,31 +28,14 @@ std::string getInfo() {
     SDL_version aa, bb, cc;
     SDL_VERSION(&aa);
     SDL_GetVersion(&bb);
-//    SDL_TTF_VERSION(&cc);
+    SDL_TTF_VERSION(&cc);
 
     std::ostringstream oss;
     oss << "SDL version  : " << aa << '\n';
     oss << "SDL linker   : " << bb << '\n';
-//    oss << "SDL_TTF ver. : " << cc << '\n';
+    oss << "SDL_TTF ver. : " << cc << '\n';
     return oss.str();
 }
-
-//void drawText ( SDL_Surface* screen, char* string, int size, int x, int y, SDL_Color fgC, SDL_Color bgC) {
-//    // Remember to call TTF_Init(), TTF_Quit(), before/after using this function.
-//    TTF_Font* font = TTF_OpenFont("arial.ttf", size);
-//    if(!font) {
-//        printf("[ERROR] TTF_OpenFont() Failed with: %s\n", TTF_GetError());
-//        exit(2);
-//    }
-//    TTF_SetFontStyle(font, TTF_STYLE_BOLD);
-//    //SDL_Surface* textSurface = TTF_RenderText_Solid(font, string, fgC);     // aliased glyphs
-//    SDL_Surface* textSurface = TTF_RenderText_Shaded(font, string, fgC, bgC);   // anti-aliased glyphs
-//    SDL_Rect textLocation = { x, y, 0, 0 };
-//    SDL_BlitSurface(textSurface, NULL, screen, &textLocation);
-//    SDL_FreeSurface(textSurface);
-//    TTF_CloseFont(font);
-//    //printf("[ERROR] Unknown error in drawText(): %s\n", TTF_GetError()); return 1;
-//}
 
 
 //---------------------------------------------------------------------
@@ -88,33 +69,17 @@ int main(int argc, char* args[]) {
         return 3;
     }
 
-
-//    ProjectivePlane plane{2};
-//    auto lines = plane.Generate();
-//    auto linesIdx = plane.ConvertPointsToIdx(lines);
-//    ImageLoader loader{"/Users/evgeniagolubeva/cobble/cobble_src/data/pictures"};
-//    loader.Load(renderer);
-//
-//    Deck deck {};
-//    deck.Init(loader.Images_, linesIdx);
-//    auto card1 = deck.GetNextCard();
-//    auto card2 = deck.GetNextCard();
-//    drawBackground(renderer, SCREEN_WIDTH, SCREEN_HEIGHT, card1, card2);
-
     Game game {SCREEN_WIDTH, SCREEN_HEIGHT, renderer};
     game.Init();
 
 
-
-//    SDL_UpdateWindowSurface(window);
-
     //-----------------------------------------------------
     // Draw the Text
     //-----------------------------------------------------
-//    if(TTF_Init() == -1) {
-//        printf("[ERROR] TTF_Init() Failed with: %s\n", TTF_GetError());
-//        exit(2);
-//    }
+    if(TTF_Init() == -1) {
+        printf("[ERROR] TTF_Init() Failed with: %s\n", TTF_GetError());
+        exit(2);
+    }
 //
 //    SDL_Color fgC1 = { 0xff,0xff,0xff }, bgC1 = {0x00,0x00,0xa0};                               // white text on blue background
 //    SDL_Color fgC2 = { 0x00,0x00,0x00 }, bgC2 = {0xff,0x00,0xff};                               // black text on magenta background
