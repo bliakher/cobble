@@ -17,12 +17,16 @@ public:
         }
         return false;
     }
-    static SDL_Texture* GetTextTexture(SDL_Renderer* renderer, char* string, int size, int x, int y, SDL_Color fgC, SDL_Color bgC) {
-        TTF_Font* font = TTF_OpenFont("arial.ttf", size);
+    static TTF_Font* GetFont(int size) {
+        TTF_Font* font = TTF_OpenFont("/Users/evgeniagolubeva/cobble/cobble_src/data/assets/BodoniBold.ttf", size);
         if(!font) {
             printf("[ERROR] TTF_OpenFont() Failed with: %s\n", TTF_GetError());
             exit(2);
         }
+        return font;
+    }
+    static SDL_Texture* GetTextTexture(SDL_Renderer* renderer, const char* string, int size, int x, int y, SDL_Color fgC, SDL_Color bgC) {
+        TTF_Font* font = GetFont(size);
         TTF_SetFontStyle(font, TTF_STYLE_BOLD);
         //SDL_Surface* textSurface = TTF_RenderText_Solid(font, string, fgC);     // aliased glyphs
         SDL_Surface* textSurface = TTF_RenderText_Shaded(font, string, fgC, bgC);   // anti-aliased glyphs
@@ -32,7 +36,7 @@ public:
         return texture;
     }
 
-    static void DrawText ( SDL_Renderer* renderer, char* string, int size, int x, int y, SDL_Color fgC, SDL_Color bgC) {
+    static void DrawText ( SDL_Renderer* renderer, const char* string, int size, int x, int y, SDL_Color fgC, SDL_Color bgC) {
         // Remember to call TTF_Init(), TTF_Quit(), before/after using this function.
         SDL_Texture* texture = GetTextTexture(renderer, string, size, x, y, fgC, bgC);
         SDL_Point textureSize;
@@ -41,7 +45,7 @@ public:
         SDL_RenderCopy(renderer, texture, NULL, &textLocation);
     }
 
-    static void DrawTextCentered(SDL_Renderer* renderer, char* string, int size, int centerX, int centerY, SDL_Color fgC, SDL_Color bgC) {
+    static void DrawTextCentered(SDL_Renderer* renderer, const char* string, int size, int centerX, int centerY, SDL_Color fgC, SDL_Color bgC) {
         SDL_Texture* texture = GetTextTexture(renderer, string, size, centerX, centerY, fgC, bgC);
         SDL_Point textureSize;
         SDL_QueryTexture(texture, NULL, NULL, &textureSize.x, &textureSize.y);

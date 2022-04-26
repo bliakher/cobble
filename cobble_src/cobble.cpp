@@ -2,9 +2,10 @@
 // Created by Evgenia Golubeva on 18.04.2022.
 //
 
-#include "cobble.h"
-
 #include "SDL2/SDL2_rotozoom.h"
+#include "SDL2/SDL_ttf.h"
+
+#include "cobble.h"
 #include "projective_plane.h"
 #include <iostream>
 #include <math.h>
@@ -219,11 +220,20 @@ void IntroScreen::Init() {
 }
 
 void IntroScreen::Draw() {
-    SDL_SetRenderDrawColor(Renderer_, 255, 255, 255, 255); // light yellow
+    SDL_Color white = { 0xff,0xff,0xff }, yellow = {0xff,0xff, 0x80};
+
+    SDL_SetRenderDrawColor(Renderer_, white.r, white.g, white.b, 255); // white
     auto windowRect = SDL_Rect{0, 0, Width_, Height_};
     SDL_RenderFillRect(Renderer_, &windowRect); // fill background
 
-    SDL_SetRenderDrawColor(Renderer_, 255, 255, 128, 255); // light yellow
+    // cobble header
+    int textSize = Height_ / 5;
+    int textX = Width_ / 2;
+    int textY = Height_ / 3;
+    string text = "COBBLE";
+    GraphicUtils::DrawTextCentered(Renderer_, text.c_str(), textSize, textX, textY, yellow, white);
+
+    SDL_SetRenderDrawColor(Renderer_, yellow.r, yellow.g, yellow.b, 255); // light yellow
     SDL_RenderFillRect(Renderer_, &startButton_); // fill start button
 
     SDL_RenderPresent(Renderer_);
