@@ -6,6 +6,7 @@
 #define COBBLE_SRC_COBBLE_H
 
 #include "image_loader.h"
+#include "graphic_utils.h"
 
 #include <utility>
 #include <vector>
@@ -65,7 +66,8 @@ class PlayScreen;
 class Game {
 public:
     Game(int width, int height, SDL_Renderer* renderer)
-        : Width_(width), Height_(height), Renderer_(renderer), State_(Intro) {}
+        : Width_(width), Height_(height), Renderer_(renderer),
+            State_(Intro) {}
     GameState State_;
     std::unique_ptr<GameScreen> Screen_;
     GameScreen* ScreenPtr_;
@@ -73,12 +75,15 @@ public:
     int Height_;
     SDL_Renderer* Renderer_;
     void Init();
-    void StartGame();
-
+    void StartPlay();
+    void StartNewGame();
+    void EndGame();
+    void DecreaseLives();
 private:
-    long timeStart;
-//    IntroScreen introScreen{Width_, Height_, Renderer};
-//    PlayScreen playScreen;
+    long timeStart_;
+    int lives_;
+    const int LIVES_AT_START = 3;
+
 };
 
 class GameScreen {
@@ -130,7 +135,18 @@ private:
     void drawBackground();
 };
 
+class OutroScreen : public GameScreen {
+public:
+    OutroScreen(Game* game, int width, int height, SDL_Renderer *renderer)
+            : GameScreen(game, width, height, renderer) {}
+    void Init() override{}
+    void Draw() override{}
+    void UpdateOnClick(int mouseX, int mouseY) override{}
 
+private:
+    SDL_Rect newGameButton_;
+    SDL_Rect exitButton_;
+};
 
 
 

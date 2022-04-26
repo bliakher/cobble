@@ -70,10 +70,8 @@ std::shared_ptr<Image> RenderedCard::GetClickedImage(int mouseX, int mouseY) {
     for (auto&& borderPair : renderedImageBorders_) {
         int imageIdx = borderPair.first;
         SDL_Rect rect = borderPair.second;
-        if (mouseX >= rect.x && mouseX <= rect.x + rect.w) {
-            if (mouseY >= rect.y && mouseY <= rect.y + rect.h) {
-                return make_shared<Image>(card_->Images_[imageIdx]);
-            }
+        if (GraphicUtils::IsInRect(rect, mouseX, mouseY)) {
+            return make_shared<Image>(card_->Images_[imageIdx]);
         }
     }
     return NULL;
@@ -170,6 +168,8 @@ void PlayScreen::UpdateOnClick(int mouseX, int mouseY) {
     if (image->Name_ == result_) {
         cout << "result: " << result_ << endl;
         prepareNextCard();
+    } else {
+        Game_->DecreaseLives();
     }
 
 }
@@ -219,25 +219,45 @@ void IntroScreen::Draw() {
 }
 
 void IntroScreen::UpdateOnClick(int mouseX, int mouseY) {
-    if (mouseX >= startButton_.x && mouseX <= startButton_.x + startButton_.w) {
-        if (mouseY >= startButton_.y && mouseY <= startButton_.y + startButton_.h) {
-            Game_->StartGame();
-        }
+    if (GraphicUtils::IsInRect(startButton_, mouseX, mouseY)) {
+        Game_->StartPlay();
     }
 }
 
 void Game::Init() {
 //    IntroScreen screen{this, Width_, Height_, Renderer_};
 //    Screen_ = make_unique<GameScreen>(screen);
+    lives_ = LIVES_AT_START;
     Screen_ = make_unique<IntroScreen>(this, Width_, Height_, Renderer_);
     Screen_->Init();
 }
 
-void Game::StartGame() {
-    PlayScreen screen{this, Width_, Height_, Renderer_};
+void Game::StartPlay() {
     Screen_ = make_unique<PlayScreen>(this, Width_, Height_, Renderer_);
     Screen_->Init();
-    timeStart = SDL_GetTicks64();
+    timeStart_ = SDL_GetTicks64();
 }
+
+void Game::StartNewGame() {
+    lives_ = LIVES_AT_START;
+    StartPlay();
+}
+
+void Game::EndGame() {
+    cout << "end of game" << endl;
+    Screen_ = make_unique<OutroScreen>(this, Width_, Height_, Renderer_);
+    Screen_->Init();
+}
+
+void Game::DecreaseLives() {
+    lives_--;
+    cout << "decreasing lives to: " << lives_ << endl;
+    if (lives_ == 0) {
+        EndGame();
+    }
+}
+
+
+
 
 
