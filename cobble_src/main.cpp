@@ -103,7 +103,6 @@ int main(int argc, char* args[]) {
 
     Game game {SCREEN_WIDTH, SCREEN_HEIGHT, renderer};
     game.Init();
-    game.Screen_->Draw();
 
 
 
@@ -146,6 +145,9 @@ int main(int argc, char* args[]) {
     SDL_Delay(1000);  // Wait 1 sec for greasy fingers
     bool eQuit = false;
     while (!eQuit) {
+
+        game.Update();
+        game.Draw();
         while(SDL_PollEvent(&wEvent)) {
             switch (wEvent.type) {
                 case SDL_QUIT:

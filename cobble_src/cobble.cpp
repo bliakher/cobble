@@ -243,10 +243,34 @@ void Game::Init() {
     Screen_->Init();
 }
 
+void Game::Update() {
+    if (State_ == Intro) {
+        return;
+    } if (State_ == Playing) {
+        long curTime = SDL_GetTicks64();
+        long timeSinceLastUpdate = curTime - lastUpdateTime_;
+        timeRemaining_ = timeRemaining_ - timeSinceLastUpdate;
+        timeRemaining_ = timeRemaining_ >= 0 ? timeRemaining_ : 0;
+        lastUpdateTime_ = curTime;
+        cout << timeRemaining_ << endl;
+        if (timeRemaining_ == 0) {
+            EndGame();
+        }
+    }
+
+}
+
+void Game::Draw() {
+    Screen_->Draw();
+}
+
 void Game::StartPlay() {
     Screen_ = make_unique<PlayScreen>(this, Width_, Height_, Renderer_);
     Screen_->Init();
+    State_ = Playing;
     timeStart_ = SDL_GetTicks64();
+    timeRemaining_ = TIME_LIMIT;
+    lastUpdateTime_ = timeStart_;
 }
 
 void Game::StartNewGame() {
@@ -258,6 +282,7 @@ void Game::EndGame() {
     cout << "end of game" << endl;
     Screen_ = make_unique<OutroScreen>(this, Width_, Height_, Renderer_);
     Screen_->Init();
+    State_ = Outro;
 }
 
 void Game::DecreaseLives() {
@@ -267,6 +292,9 @@ void Game::DecreaseLives() {
         EndGame();
     }
 }
+
+
+
 
 
 

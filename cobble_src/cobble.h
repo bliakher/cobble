@@ -78,14 +78,19 @@ public:
     int Height_;
     SDL_Renderer* Renderer_;
     void Init();
+    void Update();
+    void Draw();
     void StartPlay();
     void StartNewGame();
     void EndGame();
     void DecreaseLives();
 private:
     long timeStart_;
+    long timeRemaining_;
+    long lastUpdateTime_;
     int lives_;
     const int LIVES_AT_START = 3;
+    const int TIME_LIMIT = 60000; // 1 min in milliseconds
 
 };
 
