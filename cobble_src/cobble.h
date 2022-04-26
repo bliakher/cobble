@@ -42,7 +42,7 @@ private:
 class Deck {
 public:
     Deck(): topCardIdx_(0) {}
-    void Init(const std::vector<Image>& images, const std::vector<std::vector<int>>& cardTemplates);
+    void Init(std::string imageDirectory, SDL_Renderer* renderer);
     void Shuffle();
     std::shared_ptr<Card> GetNextCard();
     int GetRemainingCardsCount();

@@ -87,16 +87,22 @@ std::shared_ptr<Card> RenderedCard::GetCard() {
     return card_;
 }
 
-void Deck::Init(const vector<Image> &images, const vector<vector<int>> &cardTemplates) {
-    for (auto&& cardTemplate : cardTemplates) {
+void Deck::Init(string imageDirectory, SDL_Renderer* renderer) {
+    ProjectivePlane plane{2};
+    auto lines = plane.Generate();
+    auto linesIdx = plane.ConvertPointsToIdx(lines);
+    ImageLoader loader{imageDirectory};
+    loader.Load(renderer);
+
+    for (auto&& line : linesIdx) {
         Card card {};
-        for (auto&& imgIndex : cardTemplate) {
-            if (imgIndex > images.size()) {
-                cout << "invalid image index " << imgIndex << " - image count is: " << images.size() << endl;
+        for (auto&& imgIndex : line) {
+            if (imgIndex > loader.Images_.size()) {
+                cout << "invalid image index " << imgIndex << " - image count is: " << loader.Images_.size() << endl;
                 throw std::exception{};
             }
 
-            card.AddImage(images[imgIndex]);
+            card.AddImage(loader.Images_[imgIndex]);
         }
         cards_.push_back(card);
     }
@@ -122,13 +128,7 @@ int Deck::GetRemainingCardsCount() {
 
 
 void GameWindow::Init() {
-    ProjectivePlane plane{2};
-    auto lines = plane.Generate();
-    auto linesIdx = plane.ConvertPointsToIdx(lines);
-    ImageLoader loader{"/Users/evgeniagolubeva/cobble/cobble_src/data/pictures"};
-    loader.Load(renderer_);
-
-    deck_.Init(loader.Images_, linesIdx);
+    deck_.Init("/Users/evgeniagolubeva/cobble/cobble_src/data/pictures", renderer_);
     deck_.Shuffle();
     int circleWidth = Width_ / 2 - 2 * cardPadding_;
     cardRadius_ = circleWidth / 2;

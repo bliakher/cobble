@@ -30,6 +30,7 @@ vector<vector<int>> ProjectivePlane::ConvertPointsToIdx(const vector<vector<Poin
             auto pointConverted = convertToIdx(point);
             lineConverted.push_back(pointConverted);
         }
+        result.push_back(lineConverted);
     }
     return result;
 }
