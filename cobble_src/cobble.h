@@ -27,6 +27,7 @@ public:
     RenderedCard() = default;
     RenderedCard(std::shared_ptr<Card> card, int centerX, int centerY, int radius)
         : card_(std::move(card)), centerX_(centerX), centerY_(centerY), radius_(radius) {}
+        void Init();
     void Draw(SDL_Renderer *renderer);
     std::shared_ptr<Image> GetClickedImage(int mouseX, int mouseY);
     std::string GetCommon(const RenderedCard& card);
@@ -37,6 +38,8 @@ private:
     int centerY_;
     int radius_;
     std::map<int, SDL_Rect> renderedImageBorders_{};
+    int startDegree_;
+    std::vector<int> imageRotations_{};
     void addImageBorder(int imageIdx, int imagePosX, int imagePosY, int width, int height);
 };
 

@@ -34,18 +34,25 @@ std::string Card::GetCommon(const shared_ptr<Card> card) {
     return "";
 }
 
+void RenderedCard::Init() {
+    startDegree_ = rand() % 360; // start on random degree, so every card looks different
+    for (int i = 0; i < card_->Images_.size(); ++i) {
+        int imageRotation = rand() % 180; // random angle to rotate image;
+        imageRotations_.push_back(imageRotation);
+    }
+}
 
 void RenderedCard::Draw(SDL_Renderer *renderer) {
     int imageCount = card_->Images_.size();
     int imageSize = radius_ * 2 / (imageCount * 2);
     int degreeIncrement = 90;
     int radiusIncrement = imageSize / 2;
-    int degrees = rand() % 360; // start on random degree, so every card looks different
+    int degrees = startDegree_;
     int radiusPart = 0;
     for (int i = 0; i < card_->Images_.size(); ++i) {
         Image image = card_->Images_[i];
         double scale = imageSize / (double)image.Surface_->w; // scale factor
-        int rotation = rand() % 180; // random angle to rotate
+        int rotation = imageRotations_[i];
         auto scaledSurface = rotozoomSurface(image.Surface_, rotation, scale, SMOOTHING_OFF);
         auto texture = SDL_CreateTextureFromSurface(renderer, scaledSurface);
         degrees += degreeIncrement;
@@ -140,6 +147,8 @@ void PlayScreen::Init() {
     shared_ptr<Card> right = deck_.GetNextCard();
     leftCard_ = RenderedCard{move(left), leftCardCenterX_, cardCenterY_, cardRadius_};
     rightCard_ = RenderedCard{move(right), rightCardCenterX_, cardCenterY_, cardRadius_};
+    leftCard_.Init();
+    rightCard_.Init();
     result_ = leftCard_.GetCommon(rightCard_);
 }
 
@@ -179,6 +188,8 @@ void PlayScreen::prepareNextCard() {
     auto newLeft = deck_.GetNextCard();
     leftCard_ = RenderedCard{newLeft, leftCardCenterX_, cardCenterY_, cardRadius_};
     rightCard_ = RenderedCard{newRight, rightCardCenterX_, cardCenterY_, cardRadius_};
+    leftCard_.Init();
+    rightCard_.Init();
     result_ = leftCard_.GetCommon(rightCard_);
 }
 
