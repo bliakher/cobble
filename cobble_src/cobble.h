@@ -7,6 +7,7 @@
 
 #include "image_loader.h"
 #include "graphic_utils.h"
+#include "screen_components.h"
 
 #include <utility>
 #include <vector>
@@ -63,8 +64,6 @@ enum GameState {
 };
 
 class GameScreen;
-class IntroScreen;
-class PlayScreen;
 
 class Game {
 public:
@@ -97,7 +96,7 @@ private:
 class GameScreen {
 public:
     GameScreen(Game* game, int width, int height, SDL_Renderer* renderer)
-        : Game_(game), Width_(width), Height_(height), Renderer_(renderer) {}
+            : Game_(game), Width_(width), Height_(height), Renderer_(renderer) {}
     Game* Game_;
     int Width_;
     int Height_;
@@ -111,20 +110,20 @@ private:
 class IntroScreen : public GameScreen {
 public:
     IntroScreen(Game* game, int width, int height, SDL_Renderer *renderer)
-        : GameScreen(game, width, height, renderer) {}
+            : GameScreen(game, width, height, renderer) {}
     void Init() override;
     void Draw() override;
     void UpdateOnClick(int mouseX, int mouseY) override;
 
 private:
-    SDL_Rect startButton_;
+    Button startButton_;
 };
 
 class PlayScreen : public GameScreen {
 public:
     PlayScreen(Game* game, int width, int height, SDL_Renderer *renderer)
-        : GameScreen(game, width, height, renderer),
-          leftCardCenterX_(0), rightCardCenterX_(0), cardCenterY_(0), cardRadius_(0) {}
+            : GameScreen(game, width, height, renderer),
+              leftCardCenterX_(0), rightCardCenterX_(0), cardCenterY_(0), cardRadius_(0) {}
     void Draw() override;
     void Init() override;
     void UpdateOnClick(int mouseX, int mouseY) override;

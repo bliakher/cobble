@@ -4,13 +4,13 @@
 
 #include "SDL2/SDL2_rotozoom.h"
 #include "SDL2/SDL_ttf.h"
+#include "SDL2/SDL2_gfxPrimitives.h"
 
 #include "cobble.h"
 #include "projective_plane.h"
 #include <iostream>
 #include <math.h>
 #include <cstdlib>
-#include <SDL2/SDL2_gfxPrimitives.h>
 
 #define PI 3.14159265
 
@@ -136,6 +136,64 @@ int Deck::GetRemainingCardsCount() {
 }
 
 
+void Game::Init() {
+//    IntroScreen screen{this, Width_, Height_, Renderer_};
+//    Screen_ = make_unique<GameScreen>(screen);
+    lives_ = LIVES_AT_START;
+    Screen_ = make_unique<IntroScreen>(this, Width_, Height_, Renderer_);
+    Screen_->Init();
+}
+
+void Game::Update() {
+    if (State_ == Intro) {
+        return;
+    } if (State_ == Playing) {
+        long curTime = SDL_GetTicks64();
+        long timeSinceLastUpdate = curTime - lastUpdateTime_;
+        timeRemaining_ = timeRemaining_ - timeSinceLastUpdate;
+        timeRemaining_ = timeRemaining_ >= 0 ? timeRemaining_ : 0;
+        lastUpdateTime_ = curTime;
+        cout << timeRemaining_ << endl;
+        if (timeRemaining_ == 0) {
+            EndGame();
+        }
+    }
+
+}
+
+void Game::Draw() {
+    Screen_->Draw();
+}
+
+void Game::StartPlay() {
+    Screen_ = make_unique<PlayScreen>(this, Width_, Height_, Renderer_);
+    Screen_->Init();
+    State_ = Playing;
+    timeStart_ = SDL_GetTicks64();
+    timeRemaining_ = TIME_LIMIT;
+    lastUpdateTime_ = timeStart_;
+}
+
+void Game::StartNewGame() {
+    lives_ = LIVES_AT_START;
+    StartPlay();
+}
+
+void Game::EndGame() {
+    cout << "end of game" << endl;
+    Screen_ = make_unique<OutroScreen>(this, Width_, Height_, Renderer_);
+    Screen_->Init();
+    State_ = Outro;
+}
+
+void Game::DecreaseLives() {
+    lives_--;
+    cout << "decreasing lives to: " << lives_ << endl;
+    if (lives_ == 0) {
+        EndGame();
+    }
+}
+
 void PlayScreen::Init() {
     deck_.Init("/Users/evgeniagolubeva/cobble/cobble_src/data/pictures", Renderer_);
     deck_.Shuffle();
@@ -216,7 +274,8 @@ void IntroScreen::Init() {
     int buttonHeight = Height_ / 10;
     int buttonTopLeftX = Width_ / 2 - buttonWidth / 2;
     int buttonTopLeftY = 3 * Height_ / 4;
-    startButton_ = SDL_Rect{buttonTopLeftX, buttonTopLeftY, buttonWidth, buttonHeight};
+    SDL_Color white = { 0xff,0xff,0xff }, yellow = {0xff,0xff, 0x80};
+    startButton_ = {buttonTopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Start", white, yellow};
 }
 
 void IntroScreen::Draw() {
@@ -233,73 +292,14 @@ void IntroScreen::Draw() {
     string text = "COBBLE";
     GraphicUtils::DrawTextCentered(Renderer_, text.c_str(), textSize, textX, textY, yellow, white);
 
-    SDL_SetRenderDrawColor(Renderer_, yellow.r, yellow.g, yellow.b, 255); // light yellow
-    SDL_RenderFillRect(Renderer_, &startButton_); // fill start button
+    startButton_.Draw(Renderer_);
 
     SDL_RenderPresent(Renderer_);
 }
 
 void IntroScreen::UpdateOnClick(int mouseX, int mouseY) {
-    if (GraphicUtils::IsInRect(startButton_, mouseX, mouseY)) {
+    if (startButton_.WasClicked(mouseX, mouseY)) {
         Game_->StartPlay();
-    }
-}
-
-void Game::Init() {
-//    IntroScreen screen{this, Width_, Height_, Renderer_};
-//    Screen_ = make_unique<GameScreen>(screen);
-    lives_ = LIVES_AT_START;
-    Screen_ = make_unique<IntroScreen>(this, Width_, Height_, Renderer_);
-    Screen_->Init();
-}
-
-void Game::Update() {
-    if (State_ == Intro) {
-        return;
-    } if (State_ == Playing) {
-        long curTime = SDL_GetTicks64();
-        long timeSinceLastUpdate = curTime - lastUpdateTime_;
-        timeRemaining_ = timeRemaining_ - timeSinceLastUpdate;
-        timeRemaining_ = timeRemaining_ >= 0 ? timeRemaining_ : 0;
-        lastUpdateTime_ = curTime;
-        cout << timeRemaining_ << endl;
-        if (timeRemaining_ == 0) {
-            EndGame();
-        }
-    }
-
-}
-
-void Game::Draw() {
-    Screen_->Draw();
-}
-
-void Game::StartPlay() {
-    Screen_ = make_unique<PlayScreen>(this, Width_, Height_, Renderer_);
-    Screen_->Init();
-    State_ = Playing;
-    timeStart_ = SDL_GetTicks64();
-    timeRemaining_ = TIME_LIMIT;
-    lastUpdateTime_ = timeStart_;
-}
-
-void Game::StartNewGame() {
-    lives_ = LIVES_AT_START;
-    StartPlay();
-}
-
-void Game::EndGame() {
-    cout << "end of game" << endl;
-    Screen_ = make_unique<OutroScreen>(this, Width_, Height_, Renderer_);
-    Screen_->Init();
-    State_ = Outro;
-}
-
-void Game::DecreaseLives() {
-    lives_--;
-    cout << "decreasing lives to: " << lives_ << endl;
-    if (lives_ == 0) {
-        EndGame();
     }
 }
 

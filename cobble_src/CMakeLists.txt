@@ -12,13 +12,15 @@ link_directories(/usr/local/lib)
 # link from framework
 find_library(sdl2_image SDL2_image)
 find_library(sdl2_gfx SDL2_gfx)
+find_library(sdl2_ttf SDL2_ttf)
+
 
 # link from /usr/local/include
 find_package(SDL2 REQUIRED)
 
-add_executable(cobble_src main.cpp projective_plane.h projective_plane.cpp cobble.h image_loader.h image_loader.cpp cobble.cpp graphic_utils.h)
+add_executable(cobble_src main.cpp projective_plane.h projective_plane.cpp cobble.h image_loader.h image_loader.cpp cobble.cpp graphic_utils.h screen_components.h screen_components.cpp)
 
 target_link_libraries(cobble_src SDL2)
 
-target_link_libraries(cobble_src ${sdl2_image} ${sdl2_gfx})
+target_link_libraries(cobble_src ${sdl2_image} ${sdl2_gfx} ${sdl2_ttf})
 
