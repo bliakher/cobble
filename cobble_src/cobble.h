@@ -83,6 +83,7 @@ public:
     void StartNewGame();
     void EndGame();
     void DecreaseLives();
+    long GetRemainingTime();
 private:
     long timeStart_;
     long timeRemaining_;
@@ -140,6 +141,8 @@ private:
     std::string result_;
     void prepareNextCard();
     void drawBackground();
+    void drawTime();
+    void drawLives();
 };
 
 class OutroScreen : public GameScreen {

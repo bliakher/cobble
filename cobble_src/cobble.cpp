@@ -194,6 +194,10 @@ void Game::DecreaseLives() {
     }
 }
 
+long Game::GetRemainingTime() {
+    return timeRemaining_;
+}
+
 void PlayScreen::Init() {
     deck_.Init("/Users/evgeniagolubeva/cobble/cobble_src/data/pictures", Renderer_);
     deck_.Shuffle();
@@ -253,9 +257,10 @@ void PlayScreen::prepareNextCard() {
 }
 
 void PlayScreen::drawBackground() {
+    // fill background
     SDL_SetRenderDrawColor(Renderer_, 255, 255, 128, 255); // light yellow
     auto windowRect = SDL_Rect{0, 0, Width_, Height_};
-    SDL_RenderFillRect(Renderer_, &windowRect); // fill background
+    SDL_RenderFillRect(Renderer_, &windowRect);
 
     // display outline of the deck under the left card
     int deckCount = deck_.GetRemainingCardsCount();
@@ -264,9 +269,20 @@ void PlayScreen::drawBackground() {
         filledCircleRGBA(Renderer_, (leftCardCenterX_ - (cardPadding_ / 4) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
         circleRGBA(Renderer_, (leftCardCenterX_ - (cardPadding_ / 4) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
     }
-
+    // right card
     filledCircleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 255, 255, 255, 255); // second white circle
     circleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 0, 0, 0, 255); // second circle black border
+
+    drawTime();
+}
+
+void PlayScreen::drawTime() {
+    long remainingTime = Game_->GetRemainingTime(); // in milliseconds
+    int minutes = remainingTime / 60000;
+    int seconds = remainingTime / 1000 - minutes * 60;
+    string timeStr = "Remaining time: " + to_string(minutes) + ":" + to_string(seconds);
+    SDL_Color black = { 0x0,0x0,0x0 }, yellow = {0xff,0xff, 0x80};
+    GraphicUtils::DrawText(Renderer_, timeStr.c_str(), 20, 20, 20, black, yellow);
 }
 
 void IntroScreen::Init() {
