@@ -16,7 +16,7 @@ find_library(sdl2_gfx SDL2_gfx)
 # link from /usr/local/include
 find_package(SDL2 REQUIRED)
 
-add_executable(cobble_src main.cpp projective_plane.h projective_plane.cpp cobble.h)
+add_executable(cobble_src main.cpp projective_plane.h projective_plane.cpp cobble.h image_loader.h image_loader.cpp cobble.cpp)
 
 target_link_libraries(cobble_src SDL2)
 

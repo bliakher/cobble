@@ -52,19 +52,72 @@ private:
 
 };
 
-class GameWindow {
+enum GameState {
+    Intro,
+    Playing,
+    Outro,
+};
+
+class GameScreen;
+class IntroScreen;
+class PlayScreen;
+
+class Game {
 public:
-    GameWindow(int width, int height, SDL_Renderer* renderer)
-        : Width_(width), Height_(height), renderer_(renderer), leftCardCenterX_(0), rightCardCenterX_(0),
-        cardCenterY_(0), cardRadius_(0) {}
-    void Init();
-    void Draw();
-    void UpdateOnClick(int mouseX, int mouseY);
+    Game(int width, int height, SDL_Renderer* renderer)
+        : Width_(width), Height_(height), Renderer_(renderer), State_(Intro) {}
+    GameState State_;
+    std::unique_ptr<GameScreen> Screen_;
+    GameScreen* ScreenPtr_;
     int Width_;
     int Height_;
+    SDL_Renderer* Renderer_;
+    void Init();
+    void StartGame();
+
+private:
+    long timeStart;
+//    IntroScreen introScreen{Width_, Height_, Renderer};
+//    PlayScreen playScreen;
+};
+
+class GameScreen {
+public:
+    GameScreen(Game* game, int width, int height, SDL_Renderer* renderer)
+        : Game_(game), Width_(width), Height_(height), Renderer_(renderer) {}
+    Game* Game_;
+    int Width_;
+    int Height_;
+    SDL_Renderer* Renderer_;
+    virtual void Init() {}
+    virtual void Draw() {}
+    virtual void UpdateOnClick(int mouseX, int mouseY) {}
+private:
+};
+
+class IntroScreen : public GameScreen {
+public:
+    IntroScreen(Game* game, int width, int height, SDL_Renderer *renderer)
+        : GameScreen(game, width, height, renderer) {}
+    void Init() override;
+    void Draw() override;
+    void UpdateOnClick(int mouseX, int mouseY) override;
+
+private:
+    SDL_Rect startButton_;
+};
+
+class PlayScreen : public GameScreen {
+public:
+    PlayScreen(Game* game, int width, int height, SDL_Renderer *renderer)
+        : GameScreen(game, width, height, renderer),
+          leftCardCenterX_(0), rightCardCenterX_(0), cardCenterY_(0), cardRadius_(0) {}
+    void Draw() override;
+    void Init() override;
+    void UpdateOnClick(int mouseX, int mouseY) override;
+
 private:
     Deck deck_{};
-    SDL_Renderer* renderer_;
     RenderedCard leftCard_;
     RenderedCard rightCard_;
     const int cardPadding_ = 25;
@@ -76,6 +129,7 @@ private:
     void prepareNextCard();
     void drawBackground();
 };
+
 
 
 

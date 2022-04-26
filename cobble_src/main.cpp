@@ -101,9 +101,9 @@ int main(int argc, char* args[]) {
 //    auto card2 = deck.GetNextCard();
 //    drawBackground(renderer, SCREEN_WIDTH, SCREEN_HEIGHT, card1, card2);
 
-    GameWindow gameWindow{SCREEN_WIDTH, SCREEN_HEIGHT, renderer};
-    gameWindow.Init();
-    gameWindow.Draw();
+    Game game {SCREEN_WIDTH, SCREEN_HEIGHT, renderer};
+    game.Init();
+    game.Screen_->Draw();
 
 
 
@@ -155,8 +155,8 @@ int main(int argc, char* args[]) {
                 case SDL_MOUSEBUTTONDOWN:
                     int mouseX, mouseY;
                     SDL_GetMouseState(&mouseX, &mouseY);
-                    gameWindow.UpdateOnClick(mouseX, mouseY);
-                    gameWindow.Draw();
+                    game.Screen_->UpdateOnClick(mouseX, mouseY);
+                    game.Screen_->Draw();
                     break;
                 case SDL_WINDOWEVENT_CLOSE:
                     eQuit = true;

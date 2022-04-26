@@ -117,6 +117,9 @@ void Deck::Shuffle() {
 }
 
 shared_ptr<Card> Deck::GetNextCard() {
+    if (GetRemainingCardsCount() == 0) {
+        return NULL;
+    }
     int returnIdx = topCardIdx_;
     topCardIdx_++; // ToDo: check if there are cards left
     return make_shared<Card>(cards_[returnIdx]);
@@ -127,8 +130,8 @@ int Deck::GetRemainingCardsCount() {
 }
 
 
-void GameWindow::Init() {
-    deck_.Init("/Users/evgeniagolubeva/cobble/cobble_src/data/pictures", renderer_);
+void PlayScreen::Init() {
+    deck_.Init("/Users/evgeniagolubeva/cobble/cobble_src/data/pictures", Renderer_);
     deck_.Shuffle();
     int circleWidth = Width_ / 2 - 2 * cardPadding_;
     cardRadius_ = circleWidth / 2;
@@ -142,18 +145,18 @@ void GameWindow::Init() {
     result_ = leftCard_.GetCommon(rightCard_);
 }
 
-void GameWindow::Draw() {
+void PlayScreen::Draw() {
     drawBackground();
 
     // draw pictures on the cards
-    leftCard_.Draw(renderer_);
-    rightCard_.Draw(renderer_);
+    leftCard_.Draw(Renderer_);
+    rightCard_.Draw(Renderer_);
 
-    SDL_RenderPresent(renderer_);
+    SDL_RenderPresent(Renderer_);
 
 }
 
-void GameWindow::UpdateOnClick(int mouseX, int mouseY) {
+void PlayScreen::UpdateOnClick(int mouseX, int mouseY) {
     shared_ptr<Image> image;
     if (mouseX < Width_ / 2) {
         image = leftCard_.GetClickedImage(mouseX, mouseY);
@@ -171,7 +174,7 @@ void GameWindow::UpdateOnClick(int mouseX, int mouseY) {
 
 }
 
-void GameWindow::prepareNextCard() {
+void PlayScreen::prepareNextCard() {
     auto newRight = leftCard_.GetCard();
     auto newLeft = deck_.GetNextCard();
     leftCard_ = RenderedCard{newLeft, leftCardCenterX_, cardCenterY_, cardRadius_};
@@ -179,19 +182,62 @@ void GameWindow::prepareNextCard() {
     result_ = leftCard_.GetCommon(rightCard_);
 }
 
-void GameWindow::drawBackground() {
-    SDL_SetRenderDrawColor(renderer_, 255, 255, 128, 255); // light yellow
+void PlayScreen::drawBackground() {
+    SDL_SetRenderDrawColor(Renderer_, 255, 255, 128, 255); // light yellow
     auto windowRect = SDL_Rect{0, 0, Width_, Height_};
-    SDL_RenderFillRect(renderer_, &windowRect); // fill background
+    SDL_RenderFillRect(Renderer_, &windowRect); // fill background
 
     // display outline of the deck under the left card
     int deckCount = deck_.GetRemainingCardsCount();
     int outlineCount = deckCount >= 4 ? 4 : deckCount;
     for (int i = outlineCount; i >= 0; i--) {
-        filledCircleRGBA(renderer_, (leftCardCenterX_ - (cardPadding_ / 4) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
-        circleRGBA(renderer_, (leftCardCenterX_ - (cardPadding_ / 4) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
+        filledCircleRGBA(Renderer_, (leftCardCenterX_ - (cardPadding_ / 4) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
+        circleRGBA(Renderer_, (leftCardCenterX_ - (cardPadding_ / 4) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
     }
 
-    filledCircleRGBA(renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 255, 255, 255, 255); // second white circle
-    circleRGBA(renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 0, 0, 0, 255); // second circle black border
+    filledCircleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 255, 255, 255, 255); // second white circle
+    circleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 0, 0, 0, 255); // second circle black border
 }
+
+void IntroScreen::Init() {
+    int buttonWidth = Width_ / 5;
+    int buttonHeight = Height_ / 10;
+    int buttonTopLeftX = Width_ / 2 - buttonWidth / 2;
+    int buttonTopLeftY = 3 * Height_ / 4;
+    startButton_ = SDL_Rect{buttonTopLeftX, buttonTopLeftY, buttonWidth, buttonHeight};
+}
+
+void IntroScreen::Draw() {
+    SDL_SetRenderDrawColor(Renderer_, 255, 255, 255, 255); // light yellow
+    auto windowRect = SDL_Rect{0, 0, Width_, Height_};
+    SDL_RenderFillRect(Renderer_, &windowRect); // fill background
+
+    SDL_SetRenderDrawColor(Renderer_, 255, 255, 128, 255); // light yellow
+    SDL_RenderFillRect(Renderer_, &startButton_); // fill start button
+
+    SDL_RenderPresent(Renderer_);
+}
+
+void IntroScreen::UpdateOnClick(int mouseX, int mouseY) {
+    if (mouseX >= startButton_.x && mouseX <= startButton_.x + startButton_.w) {
+        if (mouseY >= startButton_.y && mouseY <= startButton_.y + startButton_.h) {
+            Game_->StartGame();
+        }
+    }
+}
+
+void Game::Init() {
+//    IntroScreen screen{this, Width_, Height_, Renderer_};
+//    Screen_ = make_unique<GameScreen>(screen);
+    Screen_ = make_unique<IntroScreen>(this, Width_, Height_, Renderer_);
+    Screen_->Init();
+}
+
+void Game::StartGame() {
+    PlayScreen screen{this, Width_, Height_, Renderer_};
+    Screen_ = make_unique<PlayScreen>(this, Width_, Height_, Renderer_);
+    Screen_->Init();
+    timeStart = SDL_GetTicks64();
+}
+
+
