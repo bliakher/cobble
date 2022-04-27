@@ -11,28 +11,23 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-SDL_Surface* loadImage(string path, SDL_Surface* screenSurface) {
-    SDL_Surface* img = IMG_Load(path.c_str());
-    if (img == NULL) {
-        fprintf(stderr, "could not load image: %s\n", IMG_GetError());
-        return NULL;
-    }
-    SDL_Surface* optimizedImg = SDL_ConvertSurface(img, screenSurface->format, 0);
-    if (optimizedImg == NULL) fprintf(stderr, "could not optimize image: %s\n", SDL_GetError());
-    SDL_FreeSurface(img);
-    return optimizedImg;
+SDL_Surface* ImageLoader::LoadSurface(std::string filePath, SDL_Renderer *renderer) {
+    return IMG_Load(filePath.c_str());
 }
 
-void Image::Load(SDL_Renderer* renderer) {
+SDL_Texture* ImageLoader::LoadTexture(string filePath, SDL_Renderer* renderer) {
     SDL_Texture *texture = NULL;
-    SDL_Surface *surface = IMG_Load(FilePath_.c_str());
+    SDL_Surface *surface = ImageLoader::LoadSurface(filePath, renderer);
     if (surface) {
-        Surface_ = surface;
         texture = SDL_CreateTextureFromSurface(renderer, surface);
 //        SDL_FreeSurface(surface);
     }
-    Texture_ = texture;
-    if (Texture_ == NULL) {
+    return texture;
+}
+
+void Image::Load(SDL_Renderer* renderer) {
+    Surface_ = ImageLoader::LoadSurface(FilePath_, renderer);
+    if (Surface_ == NULL) {
         cout << Name_ << ": texture null" << endl;
         throw std::exception{};
     }
@@ -62,3 +57,5 @@ void ImageLoader::findImageFiles() {
         Images_.emplace_back(entry.path(), entry.path().stem());
     }
 }
+
+

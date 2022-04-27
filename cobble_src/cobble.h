@@ -76,6 +76,7 @@ public:
     int Width_;
     int Height_;
     SDL_Renderer* Renderer_;
+    SDL_Surface* HeartImage_;
     void Init();
     void Update();
     void Draw();
@@ -83,6 +84,7 @@ public:
     void StartNewGame();
     void EndGame();
     void DecreaseLives();
+    int GetLives();
     long GetRemainingTime();
 private:
     long timeStart_;
@@ -91,7 +93,6 @@ private:
     int lives_;
     const int LIVES_AT_START = 3;
     const int TIME_LIMIT = 60000; // 1 min in milliseconds
-
 };
 
 class GameScreen {

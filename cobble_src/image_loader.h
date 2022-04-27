@@ -16,7 +16,6 @@ public:
     Image(std::string filePath, std::string name) : FilePath_(filePath), Name_(name) {}
     std::string FilePath_;
     std::string Name_;
-    SDL_Texture* Texture_;
     SDL_Surface* Surface_;
     void Load(SDL_Renderer* renderer);
     bool operator==(const Image& image);
@@ -28,7 +27,8 @@ public:
     std::string DirectoryPath_;
     std::vector<Image> Images_{};
     void Load(SDL_Renderer* renderer);
-
+    static SDL_Texture* LoadTexture(std::string filePath, SDL_Renderer* renderer);
+    static SDL_Surface* LoadSurface(std::string filePath, SDL_Renderer* renderer);
 private:
     void findImageFiles();
 
