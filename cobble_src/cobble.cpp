@@ -138,6 +138,7 @@ int Deck::GetRemainingCardsCount() {
 
 void Game::Init() {
     lives_ = LIVES_AT_START;
+    points_ = 0;
     Screen_ = make_unique<IntroScreen>(this, Width_, Height_, Renderer_);
     Screen_->Init();
     HeartImage_ = ImageLoader::LoadSurface("/Users/evgeniagolubeva/cobble/cobble_src/data/assets/heart.png", Renderer_);
@@ -201,6 +202,18 @@ int Game::GetLives() {
     return lives_;
 }
 
+void Game::UpdatePoints() {
+    double remainingTimePart = TIME_LIMIT / (double)timeRemaining_;
+    int timeBonus = 100 * remainingTimePart;
+    double remainingLivesPart = LIVES_AT_START / (double)lives_;
+    int livesBonus = 100 * remainingLivesPart;
+    points_ += timeBonus + livesBonus;
+}
+
+int Game::GetPoints() {
+    return points_;
+}
+
 void PlayScreen::Init() {
     deck_.Init("/Users/evgeniagolubeva/cobble/cobble_src/data/pictures", Renderer_);
     deck_.Shuffle();
@@ -242,6 +255,7 @@ void PlayScreen::UpdateOnClick(int mouseX, int mouseY) {
     cout << "image clicked: " << image->Name_ << endl;
     if (image->Name_ == result_) {
         cout << "result: " << result_ << endl;
+        Game_->UpdatePoints();
         prepareNextCard();
     } else {
         Game_->DecreaseLives();
@@ -310,11 +324,14 @@ void PlayScreen::drawHeader() {
     int seconds = remainingTime / 1000 - minutes * 60;
     string timeText = "Remaining time: " + formatTime(minutes) + ":" + formatTime(seconds);
     string livesText = "Lives: ";
+    string pointsText = "Points: " + to_string(Game_->GetPoints());
     int textTimeX =  padding_;
-    int textLivesX = Width_ / 2;
+    int textLivesX = Width_ / 3;
+    int textPointsX = 3*Width_ / 4;
     int textY = headerY + textSize / 2 + padding_;
     GraphicUtils::DrawText(Renderer_, timeText.c_str(), 20, textTimeX, textY, black, yellow);
     GraphicUtils::DrawText(Renderer_, livesText.c_str(), 20, textLivesX, textY, black, yellow);
+    GraphicUtils::DrawText(Renderer_, pointsText.c_str(), 20, textPointsX, textY, black, yellow);
 
     int heartPadding = 10;
     int lives = Game_->GetLives();
@@ -325,6 +342,8 @@ void PlayScreen::drawHeader() {
         SDL_Rect destRect{textLivesX + 60 + i* scaled->w + i*heartPadding, textY, scaled->w, scaled->h };
         SDL_RenderCopy(Renderer_, texture, NULL, &destRect);
     }
+
+
 }
 
 void IntroScreen::Init() {

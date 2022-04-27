@@ -86,11 +86,14 @@ public:
     void DecreaseLives();
     int GetLives();
     long GetRemainingTime();
+    void UpdatePoints();
+    int GetPoints();
 private:
     long timeStart_;
     long timeRemaining_;
     long lastUpdateTime_;
     int lives_;
+    int points_;
     const int LIVES_AT_START = 3;
     const int TIME_LIMIT = 60000; // 1 min in milliseconds
 };
