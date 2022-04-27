@@ -51,6 +51,7 @@ public:
     void Shuffle();
     std::shared_ptr<Card> GetNextCard();
     int GetRemainingCardsCount();
+    int GetTotalCardsCount();
 private:
     std::vector<Card> cards_{};
     int topCardIdx_;
@@ -77,6 +78,7 @@ public:
     int Height_;
     SDL_Renderer* Renderer_;
     SDL_Surface* HeartImage_;
+    int CardsTotal_;
     void Init();
     void Update();
     void Draw();
@@ -86,14 +88,16 @@ public:
     void DecreaseLives();
     int GetLives();
     long GetRemainingTime();
-    void UpdatePoints();
+    void MarkSolvedCard();
     int GetPoints();
+    int GetCardsDone();
 private:
     long timeStart_;
     long timeRemaining_;
     long lastUpdateTime_;
     int lives_;
     int points_;
+    int cardsDone_;
     const int LIVES_AT_START = 3;
     const int TIME_LIMIT = 60000; // 1 min in milliseconds
 };
@@ -154,13 +158,12 @@ class OutroScreen : public GameScreen {
 public:
     OutroScreen(Game* game, int width, int height, SDL_Renderer *renderer)
             : GameScreen(game, width, height, renderer) {}
-    void Init() override{}
-    void Draw() override{}
-    void UpdateOnClick(int mouseX, int mouseY) override{}
-
+    void Init() override;
+    void Draw() override;
+    void UpdateOnClick(int mouseX, int mouseY) override;
 private:
-    SDL_Rect newGameButton_;
-    SDL_Rect exitButton_;
+    Button newGameButton_;
+    Button exitButton_;
 };
 
 

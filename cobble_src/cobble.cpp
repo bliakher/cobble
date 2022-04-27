@@ -127,7 +127,7 @@ shared_ptr<Card> Deck::GetNextCard() {
         return NULL;
     }
     int returnIdx = topCardIdx_;
-    topCardIdx_++; // ToDo: check if there are cards left
+    topCardIdx_++;
     return make_shared<Card>(cards_[returnIdx]);
 }
 
@@ -135,10 +135,15 @@ int Deck::GetRemainingCardsCount() {
     return cards_.size() - topCardIdx_;
 }
 
+int Deck::GetTotalCardsCount() {
+    return cards_.size();
+}
+
 
 void Game::Init() {
     lives_ = LIVES_AT_START;
     points_ = 0;
+    CardsTotal_ = 0;
     Screen_ = make_unique<IntroScreen>(this, Width_, Height_, Renderer_);
     Screen_->Init();
     HeartImage_ = ImageLoader::LoadSurface("/Users/evgeniagolubeva/cobble/cobble_src/data/assets/heart.png", Renderer_);
@@ -175,6 +180,8 @@ void Game::StartPlay() {
 }
 
 void Game::StartNewGame() {
+    points_ = 0;
+    cardsDone_ = 0;
     lives_ = LIVES_AT_START;
     StartPlay();
 }
@@ -202,21 +209,29 @@ int Game::GetLives() {
     return lives_;
 }
 
-void Game::UpdatePoints() {
+int Game::GetPoints() {
+    return points_;
+}
+
+void Game::MarkSolvedCard() {
+    // update points
     double remainingTimePart = TIME_LIMIT / (double)timeRemaining_;
     int timeBonus = 100 * remainingTimePart;
     double remainingLivesPart = LIVES_AT_START / (double)lives_;
     int livesBonus = 100 * remainingLivesPart;
     points_ += timeBonus + livesBonus;
+
+    cardsDone_++;
 }
 
-int Game::GetPoints() {
-    return points_;
+int Game::GetCardsDone() {
+    return cardsDone_;
 }
 
 void PlayScreen::Init() {
     deck_.Init("/Users/evgeniagolubeva/cobble/cobble_src/data/pictures", Renderer_);
     deck_.Shuffle();
+    Game_->CardsTotal_ = deck_.GetTotalCardsCount();
     int circleWidth = Width_ / 2 - 2 * padding_;
     cardRadius_ = circleWidth / 2;
     leftCardCenterX_ = 2 * padding_ + cardRadius_;
@@ -255,7 +270,7 @@ void PlayScreen::UpdateOnClick(int mouseX, int mouseY) {
     cout << "image clicked: " << image->Name_ << endl;
     if (image->Name_ == result_) {
         cout << "result: " << result_ << endl;
-        Game_->UpdatePoints();
+        Game_->MarkSolvedCard();
         prepareNextCard();
     } else {
         Game_->DecreaseLives();
@@ -264,6 +279,10 @@ void PlayScreen::UpdateOnClick(int mouseX, int mouseY) {
 }
 
 void PlayScreen::prepareNextCard() {
+    if (deck_.GetRemainingCardsCount() == 0) {
+        Game_->EndGame();
+        return;
+    }
     auto newRight = leftCard_.GetCard();
     auto newLeft = deck_.GetNextCard();
     leftCard_ = RenderedCard{newLeft, leftCardCenterX_, cardCenterY_, cardRadius_};
@@ -381,9 +400,52 @@ void IntroScreen::UpdateOnClick(int mouseX, int mouseY) {
 }
 
 
+void OutroScreen::Init() {
+    int buttonWidth = Width_ / 4;
+    int buttonHeight = Height_ / 12;
+    int margin = 10;
+    int button1TopLeftX = Width_ / 2 - buttonWidth - margin;
+    int button2TopLeftX = button1TopLeftX + buttonWidth + 2 * margin;
+    int buttonTopLeftY = 3 * Height_ / 4;
+    SDL_Color black = { 0x0,0x0,0x0 }, yellow = {0xff,0xff, 0x80};
+    newGameButton_ = {button1TopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "New Game", yellow, black};
+    exitButton_ = {button2TopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Exit", yellow, black};
+}
 
+void OutroScreen::Draw() {
+    SDL_Color black = { 0x0,0x0,0x0 }, yellow = {0xff,0xff, 0x80};
 
+    SDL_SetRenderDrawColor(Renderer_, yellow.r, yellow.g, yellow.b, 255); // white
+    auto windowRect = SDL_Rect{0, 0, Width_, Height_};
+    SDL_RenderFillRect(Renderer_, &windowRect); // fill background
 
+    // cobble header
+    int headerSize = Height_ / 5;
+    int headerX = Width_ / 2;
+    int headerY = Height_ / 3;
+    string text = "COBBLE";
+    GraphicUtils::DrawTextCentered(Renderer_, text.c_str(), headerSize, headerX, headerY, black, yellow);
 
+    int textSize = 20;
+    int textX = Width_ / 2;
+    int textY = Height_ / 2;
+    string cards = "Cards solved: " + to_string(Game_->GetCardsDone()) +  " / " + to_string(Game_->CardsTotal_ - 1);
+    string points = "Points: " + to_string(Game_->GetPoints());
+    GraphicUtils::DrawTextCentered(Renderer_, cards.c_str(), textSize, textX, textY, black, yellow);
+    GraphicUtils::DrawTextCentered(Renderer_, points.c_str(), textSize, textX, textY + 30, black, yellow);
 
+    newGameButton_.Draw(Renderer_);
+    exitButton_.Draw(Renderer_);
 
+    SDL_RenderPresent(Renderer_);
+}
+
+void OutroScreen::UpdateOnClick(int mouseX, int mouseY) {
+    if (newGameButton_.WasClicked(mouseX, mouseY)) {
+        Game_->StartNewGame();
+    }
+    if (exitButton_.WasClicked(mouseX, mouseY)) {
+        SDL_Quit();
+        exit(0);
+    }
+}
