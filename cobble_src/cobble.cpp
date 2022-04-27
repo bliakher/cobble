@@ -201,11 +201,11 @@ long Game::GetRemainingTime() {
 void PlayScreen::Init() {
     deck_.Init("/Users/evgeniagolubeva/cobble/cobble_src/data/pictures", Renderer_);
     deck_.Shuffle();
-    int circleWidth = Width_ / 2 - 2 * cardPadding_;
+    int circleWidth = Width_ / 2 - 2 * padding_;
     cardRadius_ = circleWidth / 2;
-    leftCardCenterX_ = 2 * cardPadding_ + cardRadius_;
-    rightCardCenterX_ = leftCardCenterX_ + circleWidth + cardPadding_;
-    cardCenterY_ = Height_ - cardPadding_ - cardRadius_;
+    leftCardCenterX_ = 2 * padding_ + cardRadius_;
+    rightCardCenterX_ = leftCardCenterX_ + circleWidth + padding_;
+    cardCenterY_ = Height_ - padding_ - cardRadius_;
     shared_ptr<Card> left = deck_.GetNextCard();
     shared_ptr<Card> right = deck_.GetNextCard();
     leftCard_ = RenderedCard{move(left), leftCardCenterX_, cardCenterY_, cardRadius_};
@@ -266,14 +266,14 @@ void PlayScreen::drawBackground() {
     int deckCount = deck_.GetRemainingCardsCount();
     int outlineCount = deckCount >= 4 ? 4 : deckCount;
     for (int i = outlineCount; i >= 0; i--) {
-        filledCircleRGBA(Renderer_, (leftCardCenterX_ - (cardPadding_ / 4) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
-        circleRGBA(Renderer_, (leftCardCenterX_ - (cardPadding_ / 4) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
+        filledCircleRGBA(Renderer_, (leftCardCenterX_ - (padding_ / 4) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
+        circleRGBA(Renderer_, (leftCardCenterX_ - (padding_ / 4) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
     }
     // right card
     filledCircleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 255, 255, 255, 255); // second white circle
     circleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 0, 0, 0, 255); // second circle black border
 
-    drawTime();
+    drawHeader();
 }
 
 void PlayScreen::drawTime() {
@@ -285,19 +285,35 @@ void PlayScreen::drawTime() {
     GraphicUtils::DrawText(Renderer_, timeStr.c_str(), 20, 20, 20, black, yellow);
 }
 
+void PlayScreen::drawHeader() {
+    SDL_Color black = { 0x0,0x0,0x0 }, yellow = {0xff,0xff, 0x80};
+
+    int textSize = Height_ / 6;
+    int textX = Width_ / 2;
+    int textY = padding_ + textSize / 2;
+    string text = "COBBLE";
+    GraphicUtils::DrawTextCentered(Renderer_, text.c_str(), textSize, textX, textY, black, yellow);
+
+    long remainingTime = Game_->GetRemainingTime(); // in milliseconds
+    int minutes = remainingTime / 60000;
+    int seconds = remainingTime / 1000 - minutes * 60;
+    string timeStr = "Remaining time: " + to_string(minutes) + ":" + to_string(seconds);
+    GraphicUtils::DrawText(Renderer_, timeStr.c_str(), 20, padding_, textY + textSize / 2 + padding_, black, yellow);
+}
+
 void IntroScreen::Init() {
     int buttonWidth = Width_ / 5;
     int buttonHeight = Height_ / 10;
     int buttonTopLeftX = Width_ / 2 - buttonWidth / 2;
     int buttonTopLeftY = 3 * Height_ / 4;
-    SDL_Color white = { 0xff,0xff,0xff }, yellow = {0xff,0xff, 0x80};
-    startButton_ = {buttonTopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Start", white, yellow};
+    SDL_Color white = { 0xff,0xff,0xff }, black = { 0x0,0x0,0x0 };
+    startButton_ = {buttonTopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Start", black, white};
 }
 
 void IntroScreen::Draw() {
-    SDL_Color white = { 0xff,0xff,0xff }, yellow = {0xff,0xff, 0x80};
+    SDL_Color black = { 0x0,0x0,0x0 }, white = { 0xff,0xff,0xff};
 
-    SDL_SetRenderDrawColor(Renderer_, white.r, white.g, white.b, 255); // white
+    SDL_SetRenderDrawColor(Renderer_, black.r, black.g, black.b, 255); // white
     auto windowRect = SDL_Rect{0, 0, Width_, Height_};
     SDL_RenderFillRect(Renderer_, &windowRect); // fill background
 
@@ -306,7 +322,7 @@ void IntroScreen::Draw() {
     int textX = Width_ / 2;
     int textY = Height_ / 3;
     string text = "COBBLE";
-    GraphicUtils::DrawTextCentered(Renderer_, text.c_str(), textSize, textX, textY, yellow, white);
+    GraphicUtils::DrawTextCentered(Renderer_, text.c_str(), textSize, textX, textY, white, black);
 
     startButton_.Draw(Renderer_);
 

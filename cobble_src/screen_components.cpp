@@ -4,10 +4,18 @@
 
 #include "screen_components.h"
 
+#include "SDL2/SDL2_gfxPrimitives.h"
+
 void Button::Draw(SDL_Renderer *renderer) {
     // draw button
-    SDL_SetRenderDrawColor(renderer, buttonColor_.r, buttonColor_.g, buttonColor_.b, 255);
-    SDL_RenderFillRect(renderer, &outline_);
+//    SDL_SetRenderDrawColor(renderer, buttonColor_.r, buttonColor_.g, buttonColor_.b, 255);
+//    SDL_RenderFillRect(renderer, &outline_);
+    int topRightX = outline_.x + outline_.w;
+    int topRightY = outline_.y;
+    int bottomLeftX = outline_.x;
+    int bottomLeftY = outline_.y + outline_.h;
+    roundedBoxRGBA(renderer, topRightX, topRightY, bottomLeftX, bottomLeftY, 10,
+                         buttonColor_.r, buttonColor_.g, buttonColor_.b, 255);
 
     // draw text on button
     int textSize = 3 * outline_.h / 4; // text takes up 3/4 of button height

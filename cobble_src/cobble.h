@@ -133,7 +133,7 @@ private:
     Deck deck_{};
     RenderedCard leftCard_;
     RenderedCard rightCard_;
-    const int cardPadding_ = 25;
+    const int padding_ = 25;
     int leftCardCenterX_;
     int rightCardCenterX_;
     int cardCenterY_;
@@ -141,6 +141,7 @@ private:
     std::string result_;
     void prepareNextCard();
     void drawBackground();
+    void drawHeader();
     void drawTime();
     void drawLives();
 };
