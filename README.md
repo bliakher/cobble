@@ -12,3 +12,22 @@ In the start of the game player has 3 lives. If the player makes a mistake, they
 
 The player is awarded points for finding the right symbol quickly and penalised for making mistakes.
 
+## Configuration
+
+Pictures used in the game and the amount of symbols per card can be configured. 
+
+If you want to have `c` symbols per card:
+  - `n = c - 1`
+  - `n` must be prime for the game to work
+  - you will need to provide `n^2 + n + 1` pictures
+  - the game will contain `n^2 + n + 1` different cards
+
+For example, if you want to have 4 symbols per card (4 - 1 = 3 is prime), you will need 13 (3^2 + 3 + 1 = 13) different pictures and the game will have 13 cards. 
+
+Ideally, pictures should be in `PNG` format with transparent background.
+
+There are 13 pictures already provided with the game, so it is possible to play 2 versions:
+  - 3 symbols per card, 7 cards total
+  - 4 symbols per card, 13 cards total
+
+
