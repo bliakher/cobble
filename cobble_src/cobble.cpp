@@ -117,7 +117,9 @@ void Deck::Shuffle() {
     // Fisher–Yates shuffle
     for (int i = cards_.size() - 1; i >= 1; i--) {
         int j = rand() % (i + 1);
-        swap(cards_[i], cards_[j]);
+        auto card = cards_[i];
+        cards_[i] = cards_[j];
+        cards_[j] = card;
     }
 }
 
@@ -142,6 +144,7 @@ int Deck::GetTotalCardsCount() {
 void Game::Init() {
     lives_ = LIVES_AT_START;
     points_ = 0;
+    cardsDone_ = 0;
     CardsTotal_ = 0;
     Screen_ = make_unique<IntroScreen>(this, Width_, Height_, Renderer_);
     Screen_->Init();
@@ -180,7 +183,6 @@ void Game::StartPlay() {
 
 void Game::StartNewGame() {
     points_ = 0;
-    cardsDone_ = 0;
     lives_ = LIVES_AT_START;
     StartPlay();
 }
