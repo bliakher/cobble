@@ -47,7 +47,7 @@ private:
 class Deck {
 public:
     Deck(): topCardIdx_(0) {}
-    void Init(std::string imageDirectory, SDL_Renderer* renderer);
+    void Init( std::vector<Image>& images, int imagesPerCard);
     void Shuffle();
     std::shared_ptr<Card> GetNextCard();
     int GetRemainingCardsCount();
@@ -68,14 +68,16 @@ class GameScreen;
 
 class Game {
 public:
-    Game(int width, int height, SDL_Renderer* renderer)
-        : Width_(width), Height_(height), Renderer_(renderer),
+    Game(int width, int height, SDL_Renderer* renderer, int imagesPerCard, std::vector<Image> images)
+        : Width_(width), Height_(height), Renderer_(renderer), ImagesPerCard_(imagesPerCard), Images_(images),
             State_(Intro) {}
     GameState State_;
     std::unique_ptr<GameScreen> Screen_;
     GameScreen* ScreenPtr_;
     int Width_;
     int Height_;
+    int ImagesPerCard_;
+    std::vector<Image> Images_;
     SDL_Renderer* Renderer_;
     SDL_Surface* HeartImage_;
     int CardsTotal_;

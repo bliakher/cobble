@@ -1,47 +1,114 @@
 #include "SDL2/SDL.h"
-#include "SDL2/SDL_image.h"
 #include "SDL2/SDL_ttf.h"
 #include "SDL2/SDL2_gfxPrimitives.h"
 
 #include <stdio.h>
-#include <cstdio>
 #include <string>
 #include <sstream>
-//#include <vector>
-//#include <iostream>
+#include <iostream>
+#include <fstream>
+#include <fstream>
+#include <vector>
 
 #include "cobble.h"
 
-#define SCREEN_WIDTH    800
+#define SCREEN_WIDTH    1000
 #define SCREEN_HEIGHT   600
 #define WINDOW_TITLE    "Cobble"
-#define WINDOW_TEXT     "Hello World!"
 
 
-// We make a custom stream handler for brievity
-inline std::ostream& operator<<(std::ostream& os, SDL_version const& v) {
-    os << int(v.major) << '.' << int(v.minor) << '.' << int(v.patch);
-    return os;
+bool isPrime(int number) {
+    int divider = 2;
+    while (divider < number) {
+        if (number % divider == 0) {
+            return false;
+        }
+        divider++;
+    }
+    return true;
 }
 
-std::string getInfo() {
-    SDL_version aa, bb, cc;
-    SDL_VERSION(&aa);
-    SDL_GetVersion(&bb);
-    SDL_TTF_VERSION(&cc);
+class ArgParser {
+public:
+    std::string ImageDir_;
+    int ImagesPerCard_;
+    void Parse(std::vector<std::string>& arg) {
+        if (arg.size() > 1) {
+            if (arg.size() == 3) {
+                parseOption(arg[1], arg[2]);
+            } else if (arg.size() == 5) {
+                parseOption(arg[1], arg[2]);
+                parseOption(arg[3], arg[4]);
+            } else {
+                throw std::invalid_argument("Too many arguments");
+            }
+        }
+        std::string imageConfig = "configure_image_dir.txt";
+        if (imageDirSet_) {
+            writeToConfigFile(imageConfig, ImageDir_);
+        } else {
+            ImageDir_ = readFromConfigFile(imageConfig);
+        }
+        std::string countConfig = "configure_image_count.txt";
+        if (imageCountSet_) {
+            auto value = std::to_string(ImagesPerCard_);
+            writeToConfigFile(countConfig, value);
+        } else {
+            ImagesPerCard_ = std::stoi(readFromConfigFile(countConfig));
+        }
 
-    std::ostringstream oss;
-    oss << "SDL version  : " << aa << '\n';
-    oss << "SDL linker   : " << bb << '\n';
-    oss << "SDL_TTF ver. : " << cc << '\n';
-    return oss.str();
-}
+        if (!isPrime(ImagesPerCard_ - 1)) {
+            throw std::invalid_argument("Number of images on card - 1 must be a prime number.");
+        }
+    }
+    void Help() {
+        std::cout << "-i <path> : sets path to the directory with images used in game" << std::endl;
+        std::cout << "-c <number> : sets number of images per card" << std::endl;
+    }
+private:
+    bool imageDirSet_ = false;
+    bool imageCountSet_ = false;
+    std::string configDir_ = "/Users/evgeniagolubeva/cobble/cobble_src/data/configure/";
+    void parseOption(std::string& option, std::string& value) {
+        if (option == "-i") {
+            ImageDir_ = value;
+            imageDirSet_ = true;
+        } else if (option == "-c") {
+            try {
+                ImagesPerCard_ = std::stoi(value);
+                imageCountSet_ = true;
+            } catch (std::exception) {
+                throw std::invalid_argument("Number of images on card (-c) must be integer but was: " + value);
+            }
+        } else {
+            throw std::invalid_argument("Unknown option " + option);
+        }
+    }
+    void writeToConfigFile(std::string& fileName, std::string& value) {
+        std::ofstream configFile;
+        configFile.open(configDir_ + fileName);
+        configFile << value;
+        configFile.close();
+    }
+    std::string readFromConfigFile(std::string& fileName) {
+        std::ifstream configFile;
+        configFile.open(configDir_ + fileName);
+        std::string line;
+        std::getline(configFile, line);
+        return line;
+    }
+};
 
 
 //---------------------------------------------------------------------
 //  MAIN
 //---------------------------------------------------------------------
-int main(int argc, char* args[]) {
+int main(int argc, char** argv) {
+
+    std::vector<std::string> arg(argv, argv + argc);
+    ArgParser parser{};
+    parser.Parse(arg);
+
 
     SDL_Window* window = NULL;                      // The window we are rendering to
     SDL_Surface* screenSurface = NULL;              // The surface contained by the window
@@ -69,7 +136,10 @@ int main(int argc, char* args[]) {
         return 3;
     }
 
-    Game game {SCREEN_WIDTH, SCREEN_HEIGHT, renderer};
+    ImageLoader loader{parser.ImageDir_};
+    loader.Load(renderer);
+
+    Game game {SCREEN_WIDTH, SCREEN_HEIGHT, renderer, parser.ImagesPerCard_, loader.Images_};
     game.Init();
 
 
@@ -80,29 +150,7 @@ int main(int argc, char* args[]) {
         printf("[ERROR] TTF_Init() Failed with: %s\n", TTF_GetError());
         exit(2);
     }
-//
-//    SDL_Color fgC1 = { 0xff,0xff,0xff }, bgC1 = {0x00,0x00,0xa0};                               // white text on blue background
-//    SDL_Color fgC2 = { 0x00,0x00,0x00 }, bgC2 = {0xff,0x00,0xff};                               // black text on magenta background
-//    drawText( screenSurface, (char*) "Hello World! @ (x=50, y=100)", 18,  50,100, fgC1, bgC1);  // 18 pt @ (x=50,y=100)
-//    drawText( screenSurface, (char*) "arial.ttf @ (x=200, y=150)",   16, 200,150, fgC2, bgC2);  // 16 pt @ (x=200,y=150)
-//
-//    int i=0;
-//    const int FSIZE = 12;               // Font Size
-//    std::string ver = getInfo();
-//    const char *pStr = ver.c_str();     // Convert string to char array
 
-    //-----------------------------------------------------
-    // Split on '\n' and draw each line further down
-    //-----------------------------------------------------
-//    char *tok = strtok( (char*) pStr, "\n");
-//    while (tok != NULL) {
-//        drawText( screenSurface, (char*) tok, FSIZE, 50, (200 + (FSIZE + 4)*i), fgC1, fgC2);
-//        tok = strtok(NULL,"\n");
-//        i++;
-//    }
-//
-//    SDL_UpdateWindowSurface(window);
-//    TTF_Quit();
 
     //-----------------------------------------------------
     // Wait for Events to quit & close the window

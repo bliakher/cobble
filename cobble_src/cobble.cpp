@@ -93,22 +93,21 @@ std::shared_ptr<Card> RenderedCard::GetCard() {
     return card_;
 }
 
-void Deck::Init(string imageDirectory, SDL_Renderer* renderer) {
-    ProjectivePlane plane{2};
+void Deck::Init( std::vector<Image>& images, int imagesPerCard) {
+    ProjectivePlane plane{imagesPerCard - 1};
     auto lines = plane.Generate();
     auto linesIdx = plane.ConvertPointsToIdx(lines);
-    ImageLoader loader{imageDirectory};
-    loader.Load(renderer);
+
 
     for (auto&& line : linesIdx) {
         Card card {};
         for (auto&& imgIndex : line) {
-            if (imgIndex > loader.Images_.size()) {
-                cout << "invalid image index " << imgIndex << " - image count is: " << loader.Images_.size() << endl;
+            if (imgIndex > images.size()) {
+                cout << "invalid image index " << imgIndex << " - image count is: " << images.size() << endl;
                 throw std::exception{};
             }
 
-            card.AddImage(loader.Images_[imgIndex]);
+            card.AddImage(images[imgIndex]);
         }
         cards_.push_back(card);
     }
@@ -229,7 +228,7 @@ int Game::GetCardsDone() {
 }
 
 void PlayScreen::Init() {
-    deck_.Init("/Users/evgeniagolubeva/cobble/cobble_src/data/pictures", Renderer_);
+    deck_.Init(Game_->Images_, Game_->ImagesPerCard_);
     deck_.Shuffle();
     Game_->CardsTotal_ = deck_.GetTotalCardsCount();
     int circleWidth = Width_ / 2 - 2 * padding_;
@@ -332,9 +331,9 @@ string formatTime(int minSec) {
 void PlayScreen::drawHeader() {
     SDL_Color black = { 0x0,0x0,0x0 }, yellow = {0xff,0xff, 0x80};
 
-    int textSize = Height_ / 6;
+    int textSize = Height_ / 8;
     int headerX = Width_ / 2;
-    int headerY = padding_ + textSize / 2;
+    int headerY = padding_ / 2 + textSize / 2;
     string text = "COBBLE";
     GraphicUtils::DrawTextCentered(Renderer_, text.c_str(), textSize, headerX, headerY, black, yellow);
 
@@ -345,11 +344,11 @@ void PlayScreen::drawHeader() {
     string livesText = "Lives: ";
     string pointsText = "Points: " + to_string(Game_->GetPoints());
     int textTimeX =  padding_;
-    int textLivesX = Width_ / 3;
+    int textLivesX = Width_ / 2;
     int textPointsX = 3*Width_ / 4;
-    int textY = headerY + textSize / 2 + padding_;
+    int textY = headerY + textSize / 2 + padding_ / 2;
     GraphicUtils::DrawText(Renderer_, timeText.c_str(), 20, textTimeX, textY, black, yellow);
-    GraphicUtils::DrawText(Renderer_, livesText.c_str(), 20, textLivesX, textY, black, yellow);
+    GraphicUtils::DrawTextCentered(Renderer_, livesText.c_str(), 20, textLivesX, textY + 10, black, yellow);
     GraphicUtils::DrawText(Renderer_, pointsText.c_str(), 20, textPointsX, textY, black, yellow);
 
     int heartPadding = 10;
