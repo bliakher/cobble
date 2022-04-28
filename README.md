@@ -30,4 +30,13 @@ There are 13 pictures already provided with the game, so it is possible to play 
   - 3 symbols per card, 7 cards total
   - 4 symbols per card, 13 cards total
 
+You can configure the game with command line arguments.
+- `-i <path>` sets the path to the directory containing pictures for the game
+- `-c <number>` sets the number of symbols per card
+
+It is sufficient to run the command only once, your choices are saved for future games. The default values are `-i ./data/pictures -c 4`. ???!!! TODO: windows paths ??!!!!!
+
+
+
+
 
