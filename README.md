@@ -26,7 +26,7 @@ For example, if you want to have 4 symbols per card (4 - 1 = 3 is prime), you wi
 
 Ideally, pictures should be in `PNG` format with transparent background.
 
-There are 13 pictures already provided with the game, so it is possible to play 2 versions:
+There are 13 pictures already provided with the game (in directory `cobble_src/data/pictures`), so it is possible to play 2 versions of the game:
   - 3 symbols per card, 7 cards total
   - 4 symbols per card, 13 cards total
 
