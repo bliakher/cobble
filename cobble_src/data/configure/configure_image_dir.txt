@@ -1,1 +1,1 @@
-/Users/evgeniagolubeva/cobble/cobble_src/data/pictures
+data/pictures

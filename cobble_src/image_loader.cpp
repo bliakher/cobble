@@ -54,7 +54,7 @@ void ImageLoader::Load(SDL_Renderer *renderer) {
 void ImageLoader::findImageFiles() {
     for (const auto & entry : fs::directory_iterator(DirectoryPath_)) {
         //        cout << entry.path().filename() << endl;
-        Images_.emplace_back(entry.path(), entry.path().stem());
+        Images_.emplace_back(entry.path().string(), entry.path().stem().string());
     }
 }
 

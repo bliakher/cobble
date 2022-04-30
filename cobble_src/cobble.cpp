@@ -2,9 +2,9 @@
 // Created by Evgenia Golubeva on 18.04.2022.
 //
 
-#include "SDL2/SDL2_rotozoom.h"
-#include "SDL2/SDL_ttf.h"
-#include "SDL2/SDL2_gfxPrimitives.h"
+#include "SDL2_rotozoom.h"
+#include "SDL_ttf.h"
+#include "SDL2_gfxPrimitives.h"
 
 #include "cobble.h"
 #include "projective_plane.h"
@@ -148,7 +148,7 @@ void Game::Init() {
     CardsTotal_ = 0;
     Screen_ = make_unique<IntroScreen>(this, Width_, Height_, Renderer_);
     Screen_->Init();
-    HeartImage_ = ImageLoader::LoadSurface("/Users/evgeniagolubeva/cobble/cobble_src/data/assets/heart.png", Renderer_);
+    HeartImage_ = ImageLoader::LoadSurface("./data/assets/heart.png", Renderer_);
 }
 
 void Game::Update() {

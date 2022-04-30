@@ -5,7 +5,7 @@
 #ifndef COBBLE_SRC_SCREEN_COMPONENTS_H
 #define COBBLE_SRC_SCREEN_COMPONENTS_H
 
-#include "SDL2/SDL.h"
+#include "SDL.h"
 
 #include "graphic_utils.h"
 

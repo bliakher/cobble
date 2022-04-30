@@ -5,14 +5,15 @@
 #ifndef COBBLE_SRC_IMAGE_LOADER_H
 #define COBBLE_SRC_IMAGE_LOADER_H
 
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_image.h"
+#include "SDL.h"
+#include "SDL_image.h"
 
 #include <string>
 #include <vector>
 
 class Image {
 public:
+    //Image() {};
     Image(std::string filePath, std::string name) : FilePath_(filePath), Name_(name) {}
     std::string FilePath_;
     std::string Name_;

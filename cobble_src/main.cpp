@@ -1,6 +1,6 @@
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_ttf.h"
-#include "SDL2/SDL2_gfxPrimitives.h"
+#include "SDL.h"
+#include "SDL_ttf.h"
+#include "SDL2_gfxPrimitives.h"
 
 #include <stdio.h>
 #include <string>
@@ -54,7 +54,8 @@ public:
             auto value = std::to_string(ImagesPerCard_);
             writeToConfigFile(countConfig, value);
         } else {
-            ImagesPerCard_ = std::stoi(readFromConfigFile(countConfig));
+            auto value = readFromConfigFile(countConfig);
+            ImagesPerCard_ = std::stoi(value);
         }
 
         if (!isPrime(ImagesPerCard_ - 1)) {
@@ -68,7 +69,7 @@ public:
 private:
     bool imageDirSet_ = false;
     bool imageCountSet_ = false;
-    std::string configDir_ = "/Users/evgeniagolubeva/cobble/cobble_src/data/configure/";
+    std::string configDir_ = "./data/configure/";
     void parseOption(std::string& option, std::string& value) {
         if (option == "-i") {
             ImageDir_ = value;
@@ -94,11 +95,15 @@ private:
         std::ifstream configFile;
         configFile.open(configDir_ + fileName);
         std::string line;
-        std::getline(configFile, line);
+        if (configFile.good()) {
+            std::getline(configFile, line);
+        }
+        else {
+            throw std::invalid_argument("Cannot open file " + fileName);
+        }
         return line;
     }
 };
-
 
 //---------------------------------------------------------------------
 //  MAIN

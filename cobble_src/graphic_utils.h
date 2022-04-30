@@ -5,7 +5,8 @@
 #ifndef COBBLE_SRC_GRAPHIC_UTILS_H
 #define COBBLE_SRC_GRAPHIC_UTILS_H
 
-#include "SDL2/SDL_ttf.h"
+#include "SDL_ttf.h"
+#include <cstdio>
 
 class GraphicUtils {
 public:
@@ -18,7 +19,7 @@ public:
         return false;
     }
     static TTF_Font* GetFont(int size) {
-        TTF_Font* font = TTF_OpenFont("/Users/evgeniagolubeva/cobble/cobble_src/data/assets/BodoniBold.ttf", size);
+        TTF_Font* font = TTF_OpenFont("data/assets/BodoniBold.ttf", size);
         if(!font) {
             printf("[ERROR] TTF_OpenFont() Failed with: %s\n", TTF_GetError());
             exit(2);

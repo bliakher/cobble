@@ -4,7 +4,7 @@
 
 #include "screen_components.h"
 
-#include "SDL2/SDL2_gfxPrimitives.h"
+#include "SDL2_gfxPrimitives.h"
 
 void Button::Draw(SDL_Renderer *renderer) {
     // draw button
