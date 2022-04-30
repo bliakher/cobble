@@ -53,5 +53,6 @@ data directory to output.
 ```
 copy SDL2\lib\x64\*.dll build\Debug\
 ```
+You can do all the build steps with `build.bat` script
 
 
