@@ -10,11 +10,11 @@ std::ostream& operator << (std::ostream &os, const Point &p) {
     return (os << p.x << " " << p.y << " " << p.z  << std::endl);
 }
 
-vector<vector<Point>> ProjectivePlane::Generate() {
+std::vector<LinePoints> ProjectivePlane::Generate() {
     // generate points of PP
     vector<Point> points = generatePoints();
     vector<Point> lineEquations = generatePoints();
-    vector<vector<Point>> result {};
+    std::vector<LinePoints> result {};
     for(auto&& lineEq : lineEquations) {
         auto line = findPointsOnLine(lineEq, points);
         result.push_back(line);
@@ -22,8 +22,8 @@ vector<vector<Point>> ProjectivePlane::Generate() {
     return result;
 }
 
-vector<vector<int>> ProjectivePlane::ConvertPointsToIdx(const vector<vector<Point>>& plane) {
-    vector<vector<int>> result {};
+vector<LineIdx> ProjectivePlane::ConvertPointsToIdx(const vector<LinePoints> & plane) {
+    vector<LineIdx> result {};
     for (auto&& line : plane) {
         vector<int> lineConverted {};
         for (auto&& point : line) {

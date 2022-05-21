@@ -44,7 +44,7 @@ void ImageLoader::Load(SDL_Renderer *renderer) {
         try {
             image.Load(renderer);
         } catch (...) {
-            cout << "cannot load images" << endl;
+            cout << "cannot load image " << image.Name_ << endl;
             throw;
         }
     }
@@ -53,8 +53,9 @@ void ImageLoader::Load(SDL_Renderer *renderer) {
 
 void ImageLoader::findImageFiles() {
     for (const auto & entry : fs::directory_iterator(DirectoryPath_)) {
-        //        cout << entry.path().filename() << endl;
-        Images_.emplace_back(entry.path().string(), entry.path().stem().string());
+        if (entry.path().extension().string() == ".png") {
+            Images_.emplace_back(entry.path().string(), entry.path().stem().string());
+        }
     }
 }
 

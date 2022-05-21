@@ -16,8 +16,8 @@
 class Button {
 public:
     Button() =default;
-    Button(int x, int y, int width, int height, std::string text, SDL_Color textColor, SDL_Color buttonColor)
-        : outline_({x, y, width, height}), text_(std::move(text)), textColor_(textColor), buttonColor_(buttonColor) {}
+    Button(int x, int y, int width, int height, std::string text, std::string fontFile, SDL_Color textColor, SDL_Color buttonColor)
+        : outline_({x, y, width, height}), text_(std::move(text)), fontFile_(std::move(fontFile)), textColor_(textColor), buttonColor_(buttonColor) {}
 
     void Draw(SDL_Renderer* renderer);
     bool WasClicked(int mouseX, int mouseY);
@@ -25,6 +25,7 @@ public:
 private:
     SDL_Rect outline_;
     std::string text_;
+    std::string fontFile_;
     SDL_Color textColor_;
     SDL_Color buttonColor_;
 

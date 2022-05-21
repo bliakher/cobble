@@ -302,9 +302,10 @@ void PlayScreen::drawBackground() {
     // display outline of the deck under the left card
     int deckCount = deck_.GetRemainingCardsCount();
     int outlineCount = deckCount >= 4 ? 4 : deckCount;
+    int result = 0;
     for (int i = outlineCount; i >= 0; i--) {
-        filledCircleRGBA(Renderer_, (leftCardCenterX_ - (padding_ / 4) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
-        circleRGBA(Renderer_, (leftCardCenterX_ - (padding_ / 4) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
+        result = filledCircleRGBA(Renderer_, (leftCardCenterX_ - (padding_ / 4) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
+        result = circleRGBA(Renderer_, (leftCardCenterX_ - (padding_ / 4) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
     }
     // right card
     filledCircleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 255, 255, 255, 255); // second white circle
@@ -319,7 +320,7 @@ void PlayScreen::drawTime() {
     int seconds = remainingTime / 1000 - minutes * 60;
     string timeStr = "Remaining time: " + to_string(minutes) + ":" + to_string(seconds);
     SDL_Color black = { 0x0,0x0,0x0 }, yellow = {0xff,0xff, 0x80};
-    GraphicUtils::DrawText(Renderer_, timeStr.c_str(), 20, 20, 20, black, yellow);
+    GraphicUtils::DrawText(fontFile_, Renderer_, timeStr.c_str(), 20, 20, 20, black, yellow);
 }
 
 string formatTime(int minSec) {
@@ -337,7 +338,7 @@ void PlayScreen::drawHeader() {
     int headerX = Width_ / 2;
     int headerY = padding_ / 2 + textSize / 2;
     string text = "COBBLE";
-    GraphicUtils::DrawTextCentered(Renderer_, text.c_str(), textSize, headerX, headerY, black, yellow);
+    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, text.c_str(), textSize, headerX, headerY, black, yellow);
 
     long remainingTime = Game_->GetRemainingTime(); // in milliseconds
     int minutes = remainingTime / 60000;
@@ -349,9 +350,9 @@ void PlayScreen::drawHeader() {
     int textLivesX = Width_ / 2;
     int textPointsX = 3*Width_ / 4;
     int textY = headerY + textSize / 2 + padding_ / 2;
-    GraphicUtils::DrawText(Renderer_, timeText.c_str(), 20, textTimeX, textY, black, yellow);
-    GraphicUtils::DrawTextCentered(Renderer_, livesText.c_str(), 20, textLivesX, textY + 10, black, yellow);
-    GraphicUtils::DrawText(Renderer_, pointsText.c_str(), 20, textPointsX, textY, black, yellow);
+    GraphicUtils::DrawText(fontFile_, Renderer_, timeText.c_str(), 20, textTimeX, textY, black, yellow);
+    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, livesText.c_str(), 20, textLivesX, textY + 10, black, yellow);
+    GraphicUtils::DrawText(fontFile_, Renderer_, pointsText.c_str(), 20, textPointsX, textY, black, yellow);
 
     int heartPadding = 10;
     int lives = Game_->GetLives();
@@ -372,7 +373,7 @@ void IntroScreen::Init() {
     int buttonTopLeftX = Width_ / 2 - buttonWidth / 2;
     int buttonTopLeftY = 3 * Height_ / 4;
     SDL_Color white = { 0xff,0xff,0xff }, black = { 0x0,0x0,0x0 };
-    startButton_ = {buttonTopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Start", black, white};
+    startButton_ = {buttonTopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Start", fontFile_, black, white};
 }
 
 void IntroScreen::Draw() {
@@ -387,7 +388,7 @@ void IntroScreen::Draw() {
     int textX = Width_ / 2;
     int textY = Height_ / 3;
     string text = "COBBLE";
-    GraphicUtils::DrawTextCentered(Renderer_, text.c_str(), textSize, textX, textY, white, black);
+    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, text.c_str(), textSize, textX, textY, white, black);
 
     startButton_.Draw(Renderer_);
 
@@ -409,8 +410,8 @@ void OutroScreen::Init() {
     int button2TopLeftX = button1TopLeftX + buttonWidth + 2 * margin;
     int buttonTopLeftY = 3 * Height_ / 4;
     SDL_Color black = { 0x0,0x0,0x0 }, yellow = {0xff,0xff, 0x80};
-    newGameButton_ = {button1TopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "New Game", yellow, black};
-    exitButton_ = {button2TopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Exit", yellow, black};
+    newGameButton_ = {button1TopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "New Game", fontFile_, yellow, black};
+    exitButton_ = {button2TopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Exit", fontFile_, yellow, black};
 }
 
 void OutroScreen::Draw() {
@@ -425,15 +426,15 @@ void OutroScreen::Draw() {
     int headerX = Width_ / 2;
     int headerY = Height_ / 3;
     string text = "COBBLE";
-    GraphicUtils::DrawTextCentered(Renderer_, text.c_str(), headerSize, headerX, headerY, black, yellow);
+    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, text.c_str(), headerSize, headerX, headerY, black, yellow);
 
     int textSize = 20;
     int textX = Width_ / 2;
     int textY = Height_ / 2;
     string cards = "Cards solved: " + to_string(Game_->GetCardsDone()) +  " / " + to_string(Game_->CardsTotal_ - 1);
     string points = "Points: " + to_string(Game_->GetPoints());
-    GraphicUtils::DrawTextCentered(Renderer_, cards.c_str(), textSize, textX, textY, black, yellow);
-    GraphicUtils::DrawTextCentered(Renderer_, points.c_str(), textSize, textX, textY + 30, black, yellow);
+    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, cards.c_str(), textSize, textX, textY, black, yellow);
+    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, points.c_str(), textSize, textX, textY + 30, black, yellow);
 
     newGameButton_.Draw(Renderer_);
     exitButton_.Draw(Renderer_);

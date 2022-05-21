@@ -12,27 +12,73 @@
 #include <utility>
 #include <vector>
 #include <map>
-#include <memory>
 
+/**
+ * Playing card containing images of symbols
+ */
 class Card {
 public:
+    /**
+     * List of images on the card
+     */
     std::vector<Image> Images_{};
+    /**
+     * Add new image to the list of images.
+     * @param image Image to add
+     */
     void AddImage(const Image& image);
+    /**
+     * Get the name of the common image between 2 cards.
+     * @param card Card to compare
+     * @return Name of the common image
+     */
     std::string GetCommon(const std::shared_ptr<Card> card);
 private:
 
 
 };
 
+/**
+ * Class representing a card rendered to the screen
+ */
 class RenderedCard {
 public:
     RenderedCard() = default;
+    /**
+     * Rendered card has a circular form.
+     * @param card Card to be rendered
+     * @param centerX X coordinate of the center of the circle (card)
+     * @param centerY Y coordinate of the center of the circle (card)
+     * @param radius Circle (card) radius
+     */
     RenderedCard(std::shared_ptr<Card> card, int centerX, int centerY, int radius)
         : card_(std::move(card)), centerX_(centerX), centerY_(centerY), radius_(radius) {}
-        void Init();
+    /**
+     * Initialize card
+     */
+    void Init();
+    /**
+     * Render card to a renderer.
+     * @param renderer Renderer
+     */
     void Draw(SDL_Renderer *renderer);
+    /**
+     * Get image on card that was clicked from mouse coordinates.
+     * @param mouseX X coordinate of the mouse
+     * @param mouseY Y coordinate of the mouse
+     * @return Clicked image or null (if nothing is clicked)
+     */
     std::shared_ptr<Image> GetClickedImage(int mouseX, int mouseY);
+    /**
+     * Get the name of the common image between 2 cards.
+     * @param card Card to compare
+     * @return Name of the common image
+     */
     std::string GetCommon(const RenderedCard& card);
+    /**
+     * Get inner card object
+     * @return Inner card
+     */
     std::shared_ptr<Card> GetCard();
 private:
     std::shared_ptr<Card> card_;
@@ -45,13 +91,47 @@ private:
     void addImageBorder(int imageIdx, int imagePosX, int imagePosY, int width, int height);
 };
 
+/**
+ * Deck of game cards
+ *
+ * In underlying structure, the deck of cards is represented by a projective plane.
+ * Each card in the deck is represented by 1 line,
+ * the points on that line are the images on the card.
+ * This guarantees that every 2 cards have exactly 1 image in common.
+ * Order of the plane (n) determines the size of the deck.
+ * The deck will contain (n^2 + n + 1) cards with (n + 1) images on each card.
+ */
 class Deck {
 public:
     Deck(): topCardIdx_(0) {}
+    /**
+     * Initialize deck.
+     *
+     * Create a projective plane of corresponding size. Use the plane to assign images to cards.
+     * @param images List of all images in the game
+     * @param imagesPerCard Number of images per card
+     */
     void Init( std::vector<Image>& images, int imagesPerCard);
+    /**
+     * Shuffle cards.
+     *
+     * Uses the Fisher–Yates shuffle
+     */
     void Shuffle();
+    /**
+     * Open the top card from the deck
+     * @return Card
+     */
     std::shared_ptr<Card> GetNextCard();
+    /**
+     * Get count of remaining (unopened) cards in the deck.
+     * @return Number of remaining cards
+     */
     int GetRemainingCardsCount();
+    /**
+     * Get total number of cards (opened and unopened).
+     * @return Total number of cards
+     */
     int GetTotalCardsCount();
 private:
     std::vector<Card> cards_{};
@@ -59,6 +139,9 @@ private:
 
 };
 
+/**
+ * States of the game
+ */
 enum GameState {
     Intro,
     Playing,
@@ -116,7 +199,9 @@ public:
     virtual void Init() {}
     virtual void Draw() {}
     virtual void UpdateOnClick(int mouseX, int mouseY) {}
-private:
+
+protected:
+    const std::string fontFile_ = "./data/assets/BodoniBold.ttf";
 };
 
 class IntroScreen : public GameScreen {

@@ -1,6 +1,7 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include "SDL2_gfxPrimitives.h"
+#include "cobble.h"
 
 #include <stdio.h>
 #include <string>
@@ -9,8 +10,6 @@
 #include <fstream>
 #include <fstream>
 #include <vector>
-
-#include "cobble.h"
 
 #define SCREEN_WIDTH    1000
 #define SCREEN_HEIGHT   600
