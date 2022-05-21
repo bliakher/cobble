@@ -33,6 +33,9 @@
 #ifdef __APPLE__
 #ifndef _DARWIN_C_SOURCE
 #define _DARWIN_C_SOURCE 1 /* for memset_pattern4() */
+// fix memset_pattern4() error
+#include <string.h>
+
 #endif
 #endif
 
