@@ -81,6 +81,10 @@ public:
      */
     Card* GetCard();
 private:
+    /**
+     * Degree increment for spacing images on cards
+     */
+    static const int DEGREE_INCREMENT = 90;
     Card* card_;
     int centerX_;
     int centerY_;
@@ -167,17 +171,18 @@ public:
     int CardsTotal_;
     void Init();
     void Update();
-    void Draw();
+    void Draw() const;
     void StartPlay();
     void StartNewGame();
     void EndGame();
     void DecreaseLives();
-    int GetLives();
-    long GetRemainingTime();
+    int GetLives() const;
+    long GetRemainingTime() const;
     void MarkSolvedCard();
-    int GetPoints();
-    int GetCardsDone();
+    int GetPoints() const;
+    int GetCardsDone() const;
 private:
+    static const int MAX_POINT_INCREMENT = 100;
     long timeStart_;
     long timeRemaining_;
     long lastUpdateTime_;
@@ -201,7 +206,10 @@ public:
     virtual void UpdateOnClick(int mouseX, int mouseY) {}
 
 protected:
-    const std::string fontFile_ = "./data/assets/BodoniBold.ttf";
+    static constexpr char* fontFile_ = (char*)"./data/assets/BodoniBold.ttf";
+    static constexpr SDL_Color yellow_ = {.r = 255, .g = 255, .b = 128, .a = 255};
+    static constexpr SDL_Color white_ = {.r = 255, .g = 255, .b = 255, .a = 255};
+    static constexpr SDL_Color black_ = {.r = 0, .g = 0, .b = 0, .a = 255};
 };
 
 class IntroScreen : public GameScreen {
@@ -226,14 +234,15 @@ public:
     void UpdateOnClick(int mouseX, int mouseY) override;
 
 private:
+    static const short CARD_PADDING = 25;
+    static const int MAX_CARDS_DISPLAYED = 4;
     Deck deck_{};
     RenderedCard leftCard_;
     RenderedCard rightCard_;
-    const int padding_ = 25;
-    int leftCardCenterX_;
-    int rightCardCenterX_;
-    int cardCenterY_;
-    int cardRadius_;
+    short leftCardCenterX_;
+    short rightCardCenterX_;
+    short cardCenterY_;
+    short cardRadius_;
     std::string result_;
     void prepareNextCard();
     void drawBackground();

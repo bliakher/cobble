@@ -12,7 +12,7 @@
 #include <math.h>
 #include <cstdlib>
 
-#define PI 3.14159265
+constexpr float PI = 3.14159265;
 
 using namespace std;
 
@@ -44,10 +44,10 @@ void RenderedCard::Init() {
 }
 
 void RenderedCard::Draw(SDL_Renderer *renderer) {
+    // images are place in a spiral, starting from the center outward
     int imageCount = card_->Images_.size();
-    int imageSize = radius_ * 2 / (imageCount * 2);
-    int degreeIncrement = 90;
-    int radiusIncrement = imageSize / 2;
+    int imageSize = radius_ / imageCount; // image size is counted so that images can fit side by side in the radius of the card
+    int radiusIncrement = imageSize / 2; // how much image is moved outward from the previous one
     int degrees = startDegree_;
     int radiusPart = 0;
     for (int i = 0; i < card_->Images_.size(); ++i) {
@@ -56,7 +56,7 @@ void RenderedCard::Draw(SDL_Renderer *renderer) {
         int rotation = imageRotations_[i];
         auto scaledSurface = rotozoomSurface(image.Surface_, rotation, scale, SMOOTHING_OFF);
         auto texture = SDL_CreateTextureFromSurface(renderer, scaledSurface);
-        degrees += degreeIncrement;
+        degrees += DEGREE_INCREMENT;
         radiusPart += radiusIncrement;
         int x = centerX_ + cos(toRadians(degrees)) * radiusPart; // coordinates of top left corner of image
         int y = centerY_ + sin(toRadians(degrees)) * radiusPart;
@@ -98,7 +98,6 @@ void Deck::Init(const std::vector<Image>& images, int imagesPerCard) {
     auto lines = plane.Generate();
     auto linesIdx = plane.ConvertPointsToIdx(lines);
 
-
     for (auto&& line : linesIdx) {
         Card card {};
         for (auto&& imgIndex : line) {
@@ -125,7 +124,7 @@ void Deck::Shuffle() {
 
 Card* Deck::GetNextCard() {
     if (GetRemainingCardsCount() == 0) {
-        return NULL;
+        return nullptr;
     }
     int returnIdx = topCardIdx_;
     topCardIdx_++;
@@ -168,7 +167,7 @@ void Game::Update() {
 
 }
 
-void Game::Draw() {
+void Game::Draw() const {
     Screen_->Draw();
 }
 
@@ -202,30 +201,30 @@ void Game::DecreaseLives() {
     }
 }
 
-long Game::GetRemainingTime() {
+long Game::GetRemainingTime() const {
     return timeRemaining_;
 }
 
-int Game::GetLives() {
+int Game::GetLives() const {
     return lives_;
 }
 
-int Game::GetPoints() {
+int Game::GetPoints() const {
     return points_;
 }
 
 void Game::MarkSolvedCard() {
     // update points
     double remainingTimePart = TIME_LIMIT / (double)timeRemaining_;
-    int timeBonus = 100 * remainingTimePart;
+    int timeBonus = MAX_POINT_INCREMENT * remainingTimePart;
     double remainingLivesPart = LIVES_AT_START / (double)lives_;
-    int livesBonus = 100 * remainingLivesPart;
+    int livesBonus = MAX_POINT_INCREMENT * remainingLivesPart;
     points_ += timeBonus + livesBonus;
 
     cardsDone_++;
 }
 
-int Game::GetCardsDone() {
+int Game::GetCardsDone() const {
     return cardsDone_;
 }
 
@@ -233,11 +232,11 @@ void PlayScreen::Init() {
     deck_.Init(Game_->Images_, Game_->ImagesPerCard_);
     deck_.Shuffle();
     Game_->CardsTotal_ = deck_.GetTotalCardsCount();
-    int circleWidth = Width_ / 2 - 2 * padding_;
+    int circleWidth = Width_ / 2 - 2 * CARD_PADDING;
     cardRadius_ = circleWidth / 2;
-    leftCardCenterX_ = 2 * padding_ + cardRadius_;
-    rightCardCenterX_ = leftCardCenterX_ + circleWidth + padding_;
-    cardCenterY_ = Height_ - padding_ - cardRadius_;
+    leftCardCenterX_ = 2 * CARD_PADDING + cardRadius_;
+    rightCardCenterX_ = leftCardCenterX_ + circleWidth + CARD_PADDING;
+    cardCenterY_ = Height_ - CARD_PADDING - cardRadius_;
     Card* left = deck_.GetNextCard();
     Card* right = deck_.GetNextCard();
     leftCard_ = RenderedCard{left, leftCardCenterX_, cardCenterY_, cardRadius_};
@@ -249,7 +248,6 @@ void PlayScreen::Init() {
 
 void PlayScreen::Draw() {
     drawBackground();
-
     // draw pictures on the cards
     leftCard_.Draw(Renderer_);
     rightCard_.Draw(Renderer_);
@@ -265,7 +263,7 @@ void PlayScreen::UpdateOnClick(int mouseX, int mouseY) {
     } else {
         image = rightCard_.GetClickedImage(mouseX, mouseY);
     }
-    if (image == NULL) {
+    if (image == nullptr) {
         return;
     }
     cout << "image clicked: " << image->Name_ << endl;
@@ -295,21 +293,21 @@ void PlayScreen::prepareNextCard() {
 
 void PlayScreen::drawBackground() {
     // fill background
-    SDL_SetRenderDrawColor(Renderer_, 255, 255, 128, 255); // light yellow
+    SDL_SetRenderDrawColor(Renderer_, yellow_.r, yellow_.g, yellow_.b, yellow_.a); // light yellow
     auto windowRect = SDL_Rect{0, 0, Width_, Height_};
     SDL_RenderFillRect(Renderer_, &windowRect);
 
     // display outline of the deck under the left card
     int deckCount = deck_.GetRemainingCardsCount();
-    int outlineCount = deckCount >= 4 ? 4 : deckCount;
+    int outlineCount = deckCount >= MAX_CARDS_DISPLAYED ? MAX_CARDS_DISPLAYED : deckCount;
     int result = 0;
     for (int i = outlineCount; i >= 0; i--) {
-        result = filledCircleRGBA(Renderer_, (leftCardCenterX_ - (padding_ / 4) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
-        result = circleRGBA(Renderer_, (leftCardCenterX_ - (padding_ / 4) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
+        result = filledCircleRGBA(Renderer_, (short)(leftCardCenterX_ - (CARD_PADDING / MAX_CARDS_DISPLAYED) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
+        result = circleRGBA(Renderer_, (short)(leftCardCenterX_ - (CARD_PADDING / MAX_CARDS_DISPLAYED) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
     }
     // right card
-    filledCircleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 255, 255, 255, 255); // second white circle
-    circleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, 0, 0, 0, 255); // second circle black border
+    filledCircleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, white_.r, white_.g, white_.b, white_.a); // second white circle
+    circleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, black_.r, black_.g, black_.b, black_.a); // second circle black border
 
     drawHeader();
 }
@@ -319,8 +317,7 @@ void PlayScreen::drawTime() {
     int minutes = remainingTime / 60000;
     int seconds = remainingTime / 1000 - minutes * 60;
     string timeStr = "Remaining time: " + to_string(minutes) + ":" + to_string(seconds);
-    SDL_Color black = { 0x0,0x0,0x0 }, yellow = {0xff,0xff, 0x80};
-    GraphicUtils::DrawText(fontFile_, Renderer_, timeStr.c_str(), 20, 20, 20, black, yellow);
+    GraphicUtils::DrawText(fontFile_, Renderer_, timeStr.c_str(), 20, 20, 20, black_, yellow_);
 }
 
 string formatTime(int minSec) {
@@ -332,13 +329,11 @@ string formatTime(int minSec) {
 }
 
 void PlayScreen::drawHeader() {
-    SDL_Color black = { 0x0,0x0,0x0 }, yellow = {0xff,0xff, 0x80};
-
     int textSize = Height_ / 8;
     int headerX = Width_ / 2;
-    int headerY = padding_ / 2 + textSize / 2;
+    int headerY = CARD_PADDING / 2 + textSize / 2;
     string text = "COBBLE";
-    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, text.c_str(), textSize, headerX, headerY, black, yellow);
+    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, text.c_str(), textSize, headerX, headerY, black_, yellow_);
 
     long remainingTime = Game_->GetRemainingTime(); // in milliseconds
     int minutes = remainingTime / 60000;
@@ -346,13 +341,13 @@ void PlayScreen::drawHeader() {
     string timeText = "Remaining time: " + formatTime(minutes) + ":" + formatTime(seconds);
     string livesText = "Lives: ";
     string pointsText = "Points: " + to_string(Game_->GetPoints());
-    int textTimeX =  padding_;
+    int textTimeX =  CARD_PADDING;
     int textLivesX = Width_ / 2;
     int textPointsX = 3*Width_ / 4;
-    int textY = headerY + textSize / 2 + padding_ / 2;
-    GraphicUtils::DrawText(fontFile_, Renderer_, timeText.c_str(), 20, textTimeX, textY, black, yellow);
-    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, livesText.c_str(), 20, textLivesX, textY + 10, black, yellow);
-    GraphicUtils::DrawText(fontFile_, Renderer_, pointsText.c_str(), 20, textPointsX, textY, black, yellow);
+    int textY = headerY + textSize / 2 + CARD_PADDING / 2;
+    GraphicUtils::DrawText(fontFile_, Renderer_, timeText.c_str(), 20, textTimeX, textY, black_, yellow_);
+    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, livesText.c_str(), 20, textLivesX, textY + 10, black_, yellow_);
+    GraphicUtils::DrawText(fontFile_, Renderer_, pointsText.c_str(), 20, textPointsX, textY, black_, yellow_);
 
     int heartPadding = 10;
     int lives = Game_->GetLives();
@@ -372,14 +367,11 @@ void IntroScreen::Init() {
     int buttonHeight = Height_ / 10;
     int buttonTopLeftX = Width_ / 2 - buttonWidth / 2;
     int buttonTopLeftY = 3 * Height_ / 4;
-    SDL_Color white = { 0xff,0xff,0xff }, black = { 0x0,0x0,0x0 };
-    startButton_ = {buttonTopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Start", fontFile_, black, white};
+    startButton_ = {buttonTopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Start", fontFile_, black_, white_};
 }
 
 void IntroScreen::Draw() {
-    SDL_Color black = { 0x0,0x0,0x0 }, white = { 0xff,0xff,0xff};
-
-    SDL_SetRenderDrawColor(Renderer_, black.r, black.g, black.b, 255); // white
+    SDL_SetRenderDrawColor(Renderer_, black_.r, black_.g, black_.b, black_.a);
     auto windowRect = SDL_Rect{0, 0, Width_, Height_};
     SDL_RenderFillRect(Renderer_, &windowRect); // fill background
 
@@ -388,7 +380,7 @@ void IntroScreen::Draw() {
     int textX = Width_ / 2;
     int textY = Height_ / 3;
     string text = "COBBLE";
-    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, text.c_str(), textSize, textX, textY, white, black);
+    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, text.c_str(), textSize, textX, textY, white_, black_);
 
     startButton_.Draw(Renderer_);
 
@@ -409,15 +401,12 @@ void OutroScreen::Init() {
     int button1TopLeftX = Width_ / 2 - buttonWidth - margin;
     int button2TopLeftX = button1TopLeftX + buttonWidth + 2 * margin;
     int buttonTopLeftY = 3 * Height_ / 4;
-    SDL_Color black = { 0x0,0x0,0x0 }, yellow = {0xff,0xff, 0x80};
-    newGameButton_ = {button1TopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "New Game", fontFile_, yellow, black};
-    exitButton_ = {button2TopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Exit", fontFile_, yellow, black};
+    newGameButton_ = {button1TopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "New Game", fontFile_, yellow_, black_};
+    exitButton_ = {button2TopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Exit", fontFile_, yellow_, black_};
 }
 
 void OutroScreen::Draw() {
-    SDL_Color black = { 0x0,0x0,0x0 }, yellow = {0xff,0xff, 0x80};
-
-    SDL_SetRenderDrawColor(Renderer_, yellow.r, yellow.g, yellow.b, 255); // white
+    SDL_SetRenderDrawColor(Renderer_, yellow_.r, yellow_.g, yellow_.b, yellow_.a);
     auto windowRect = SDL_Rect{0, 0, Width_, Height_};
     SDL_RenderFillRect(Renderer_, &windowRect); // fill background
 
@@ -426,15 +415,15 @@ void OutroScreen::Draw() {
     int headerX = Width_ / 2;
     int headerY = Height_ / 3;
     string text = "COBBLE";
-    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, text.c_str(), headerSize, headerX, headerY, black, yellow);
+    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, text.c_str(), headerSize, headerX, headerY, black_, yellow_);
 
     int textSize = 20;
     int textX = Width_ / 2;
     int textY = Height_ / 2;
     string cards = "Cards solved: " + to_string(Game_->GetCardsDone()) +  " / " + to_string(Game_->CardsTotal_ - 1);
     string points = "Points: " + to_string(Game_->GetPoints());
-    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, cards.c_str(), textSize, textX, textY, black, yellow);
-    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, points.c_str(), textSize, textX, textY + 30, black, yellow);
+    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, cards.c_str(), textSize, textX, textY, black_, yellow_);
+    GraphicUtils::DrawTextCentered(fontFile_, Renderer_, points.c_str(), textSize, textX, textY + 30, black_, yellow_);
 
     newGameButton_.Draw(Renderer_);
     exitButton_.Draw(Renderer_);

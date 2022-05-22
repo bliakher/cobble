@@ -11,7 +11,7 @@
 using namespace std;
 namespace fs = std::filesystem;
 
-SDL_Surface* ImageLoader::LoadSurface(const std::string filePath&, SDL_Renderer *renderer) {
+SDL_Surface* ImageLoader::LoadSurface(const std::string& filePath, SDL_Renderer *renderer) {
     return IMG_Load(filePath.c_str());
 }
 
