@@ -93,7 +93,7 @@ Card* RenderedCard::GetCard() {
     return card_;
 }
 
-void Deck::Init( std::vector<Image>& images, int imagesPerCard) {
+void Deck::Init(const std::vector<Image>& images, int imagesPerCard) {
     ProjectivePlane plane{imagesPerCard - 1};
     auto lines = plane.Generate();
     auto linesIdx = plane.ConvertPointsToIdx(lines);

@@ -111,7 +111,7 @@ public:
      * @param images List of all images in the game
      * @param imagesPerCard Number of images per card
      */
-    void Init( std::vector<Image>& images, int imagesPerCard);
+    void Init(const std::vector<Image>& images, int imagesPerCard);
     /**
      * Shuffle cards.
      *

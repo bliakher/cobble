@@ -9,12 +9,13 @@
 #include "SDL_image.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 class Image {
 public:
     //Image() {};
-    Image(std::string filePath, std::string name) : FilePath_(filePath), Name_(name) {}
+    Image(std::string filePath, std::string name) : FilePath_(std::move(filePath)), Name_(std::move(name)) {}
     std::string FilePath_;
     std::string Name_;
     SDL_Surface* Surface_;
@@ -28,8 +29,8 @@ public:
     std::string DirectoryPath_;
     std::vector<Image> Images_{};
     void Load(SDL_Renderer* renderer);
-    static SDL_Texture* LoadTexture(std::string filePath, SDL_Renderer* renderer);
-    static SDL_Surface* LoadSurface(std::string filePath, SDL_Renderer* renderer);
+    static SDL_Texture* LoadTexture(const std::string& filePath, SDL_Renderer* renderer);
+    static SDL_Surface* LoadSurface(const std::string& filePath, SDL_Renderer* renderer);
 private:
     void findImageFiles();
 
