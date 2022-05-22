@@ -24,7 +24,7 @@ void Card::AddImage(const Image& image) {
     Images_.push_back(image);
 }
 
-std::string Card::GetCommon(const shared_ptr<Card> card) {
+std::string Card::GetCommon(const Card* card) {
     for (auto&& image1 : Images_) {
         for (auto&& image2 : card->Images_) {
             if (image1.Name_ == image2.Name_) {
@@ -74,12 +74,12 @@ void RenderedCard::addImageBorder(int imageIdx, int imagePosX, int imagePosY, in
 }
 
 // returns NULL if no image was clicked
-std::shared_ptr<Image> RenderedCard::GetClickedImage(int mouseX, int mouseY) {
+Image* RenderedCard::GetClickedImage(int mouseX, int mouseY) {
     for (auto&& borderPair : renderedImageBorders_) {
         int imageIdx = borderPair.first;
         SDL_Rect rect = borderPair.second;
         if (GraphicUtils::IsInRect(rect, mouseX, mouseY)) {
-            return make_shared<Image>(card_->Images_[imageIdx]);
+            return &card_->Images_[imageIdx];
         }
     }
     return NULL;
@@ -89,7 +89,7 @@ std::string RenderedCard::GetCommon(const RenderedCard &card) {
     return card_->GetCommon(card.card_);
 }
 
-std::shared_ptr<Card> RenderedCard::GetCard() {
+Card* RenderedCard::GetCard() {
     return card_;
 }
 
@@ -123,13 +123,13 @@ void Deck::Shuffle() {
     }
 }
 
-shared_ptr<Card> Deck::GetNextCard() {
+Card* Deck::GetNextCard() {
     if (GetRemainingCardsCount() == 0) {
         return NULL;
     }
     int returnIdx = topCardIdx_;
     topCardIdx_++;
-    return make_shared<Card>(cards_[returnIdx]);
+    return &cards_[returnIdx];
 }
 
 int Deck::GetRemainingCardsCount() {
@@ -238,10 +238,10 @@ void PlayScreen::Init() {
     leftCardCenterX_ = 2 * padding_ + cardRadius_;
     rightCardCenterX_ = leftCardCenterX_ + circleWidth + padding_;
     cardCenterY_ = Height_ - padding_ - cardRadius_;
-    shared_ptr<Card> left = deck_.GetNextCard();
-    shared_ptr<Card> right = deck_.GetNextCard();
-    leftCard_ = RenderedCard{move(left), leftCardCenterX_, cardCenterY_, cardRadius_};
-    rightCard_ = RenderedCard{move(right), rightCardCenterX_, cardCenterY_, cardRadius_};
+    Card* left = deck_.GetNextCard();
+    Card* right = deck_.GetNextCard();
+    leftCard_ = RenderedCard{left, leftCardCenterX_, cardCenterY_, cardRadius_};
+    rightCard_ = RenderedCard{right, rightCardCenterX_, cardCenterY_, cardRadius_};
     leftCard_.Init();
     rightCard_.Init();
     result_ = leftCard_.GetCommon(rightCard_);
@@ -259,7 +259,7 @@ void PlayScreen::Draw() {
 }
 
 void PlayScreen::UpdateOnClick(int mouseX, int mouseY) {
-    shared_ptr<Image> image;
+    Image* image;
     if (mouseX < Width_ / 2) {
         image = leftCard_.GetClickedImage(mouseX, mouseY);
     } else {

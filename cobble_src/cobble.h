@@ -32,7 +32,7 @@ public:
      * @param card Card to compare
      * @return Name of the common image
      */
-    std::string GetCommon(const std::shared_ptr<Card> card);
+    std::string GetCommon(const Card* card);
 private:
 
 
@@ -51,8 +51,8 @@ public:
      * @param centerY Y coordinate of the center of the circle (card)
      * @param radius Circle (card) radius
      */
-    RenderedCard(std::shared_ptr<Card> card, int centerX, int centerY, int radius)
-        : card_(std::move(card)), centerX_(centerX), centerY_(centerY), radius_(radius) {}
+    RenderedCard(Card* card, int centerX, int centerY, int radius)
+        : card_(card), centerX_(centerX), centerY_(centerY), radius_(radius) {}
     /**
      * Initialize card
      */
@@ -68,7 +68,7 @@ public:
      * @param mouseY Y coordinate of the mouse
      * @return Clicked image or null (if nothing is clicked)
      */
-    std::shared_ptr<Image> GetClickedImage(int mouseX, int mouseY);
+    Image* GetClickedImage(int mouseX, int mouseY);
     /**
      * Get the name of the common image between 2 cards.
      * @param card Card to compare
@@ -79,9 +79,9 @@ public:
      * Get inner card object
      * @return Inner card
      */
-    std::shared_ptr<Card> GetCard();
+    Card* GetCard();
 private:
-    std::shared_ptr<Card> card_;
+    Card* card_;
     int centerX_;
     int centerY_;
     int radius_;
@@ -122,7 +122,7 @@ public:
      * Open the top card from the deck
      * @return Card
      */
-    std::shared_ptr<Card> GetNextCard();
+    Card* GetNextCard();
     /**
      * Get count of remaining (unopened) cards in the deck.
      * @return Number of remaining cards
