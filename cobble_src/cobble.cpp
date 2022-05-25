@@ -10,6 +10,7 @@
 #include "projective_plane.h"
 #include <iostream>
 #include <math.h>
+#include <random>
 #include <cstdlib>
 
 constexpr float PI = 3.14159265;
@@ -36,6 +37,7 @@ std::string Card::GetCommon(const Card* card) {
 }
 
 void RenderedCard::Init() {
+    srand(time(nullptr));
     startDegree_ = rand() % 360; // start on random degree, so every card looks different
     for (int i = 0; i < card_->Images_.size(); ++i) {
         int imageRotation = rand() % 180; // random angle to rotate image;
@@ -114,6 +116,7 @@ void Deck::Init(const std::vector<Image>& images, int imagesPerCard) {
 
 void Deck::Shuffle() {
     // Fisher–Yates shuffle
+    srand(time(nullptr));
     for (int i = cards_.size() - 1; i >= 1; i--) {
         int j = rand() % (i + 1);
         auto card = cards_[i];
