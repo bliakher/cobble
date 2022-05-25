@@ -106,6 +106,7 @@ void Game::StartPlay() {
 
 void Game::StartNewGame() {
     points_ = 0;
+    cardsDone_ = 0;
     lives_ = LIVES_AT_START;
     StartPlay();
 }
