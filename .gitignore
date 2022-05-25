@@ -1,2 +1,5 @@
 build
+cobble_src/docs
+cobble_src/cmake-build-debug
 .vscode
+.idea
