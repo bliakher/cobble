@@ -37,7 +37,6 @@ void Deck::Init(const std::vector<Image>& images, int imagesPerCard) {
 
 void Deck::Shuffle() {
     // Fisher–Yates shuffle
-    srand(time(nullptr));
     for (int i = cards_.size() - 1; i >= 1; i--) {
         int j = rand() % (i + 1);
         auto card = cards_[i];
@@ -72,6 +71,7 @@ void Game::Init() {
     Screen_ = make_unique<IntroScreen>(this, Width_, Height_, Renderer_);
     Screen_->Init();
     HeartImage_ = ImageLoader::LoadSurface("./data/assets/heart.png");
+    srand(time(nullptr)); // seed based on time
 }
 
 void Game::Update() {

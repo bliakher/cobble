@@ -31,7 +31,6 @@ std::string Card::GetCommon(const Card* card) {
 
 
 void RenderedCard::Init() {
-    srand(time(nullptr)); // seed based on time
     startDegree_ = rand() % 360; // start on random degree, so every card looks different
     for (int i = 0; i < card_->Images_.size(); ++i) {
         int imageRotation = rand() % 360; // random angle to rotate image;
