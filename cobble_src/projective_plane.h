@@ -38,10 +38,8 @@ std::ostream& operator << (std::ostream &os, const Point &p);
  * - any 2 lines intersect at exactly 1 point
  *
  * Generating:
- * ToDo: rewrite
- * - n is the order of the plane, n is prime
- * - n = p - 1, where p is the number
- * - we take triples of numbers from Z_p - (x, y, z), excluding (0, 0, 0)
+ * - n is the order of the plane, n must be prime
+ * - we take triples of numbers from Z_n - (x, y, z), excluding (0, 0, 0)
  * - we define equivalency where (x, y, z) ~ (l*x, l*y, l*z) for some l from Z_p
  * - we define points on the plane as representatives of equivalency classes that have a 1 on the last non-zero coordinate
  * - that gives as (n^2 + n + 1) points: (x, y, 1) - n^2, (x, 1, 0) - n, (1, 0, 0) - 1
@@ -52,7 +50,7 @@ std::ostream& operator << (std::ostream &os, const Point &p);
 class ProjectivePlane {
 public:
     /**
-     * @param order order of the plane (n = p - 1, where p is prime)
+     * @param order order of the plane (n is prime)
      */
     explicit ProjectivePlane(int order) : n_(order) {
         pointCount_ = GetSizeFromOrder(order);
