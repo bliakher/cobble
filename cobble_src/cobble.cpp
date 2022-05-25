@@ -150,7 +150,7 @@ void Game::Init() {
     CardsTotal_ = 0;
     Screen_ = make_unique<IntroScreen>(this, Width_, Height_, Renderer_);
     Screen_->Init();
-    HeartImage_ = ImageLoader::LoadSurface("./data/assets/heart.png", Renderer_);
+    HeartImage_ = ImageLoader::LoadSurface("./data/assets/heart.png");
 }
 
 void Game::Update() {

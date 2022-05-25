@@ -144,8 +144,8 @@ int main(int argc, char** argv) {
 
     ImageLoader loader{parser.ImageDir_, imagesCount};
     try {
-        loader.Load(renderer);
-    } catch(std::invalid_argument) {
+        loader.Load();
+    } catch(const std::invalid_argument& error) {
         std::cout << "Not enough images loaded." << std::endl;
         std::cout << imagesCount << " images needed but only " << loader.Images_.size() << " loaded from directory " << parser.ImageDir_ << std::endl;
         SDL_Quit();

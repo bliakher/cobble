@@ -13,9 +13,9 @@
  */
 struct Point {
 public:
-    int x;
-    int y;
-    int z;
+    int x; /** x coordinate */
+    int y; /** y coordinate */
+    int z; /** z coordinate */
     Point(int x, int y, int z) : x(x), y(y), z(z) {}
 };
 

@@ -81,9 +81,9 @@ public:
         // Remember to call TTF_Init(), TTF_Quit(), before/after using this function.
         SDL_Texture* texture = GetTextTexture(fontFile, renderer, string, size, fgC, bgC);
         SDL_Point textureSize;
-        SDL_QueryTexture(texture, NULL, NULL, &textureSize.x, &textureSize.y);
+        SDL_QueryTexture(texture, nullptr, nullptr, &textureSize.x, &textureSize.y);
         SDL_Rect textLocation = { x, y, textureSize.x, textureSize.y };
-        SDL_RenderCopy(renderer, texture, NULL, &textLocation);
+        SDL_RenderCopy(renderer, texture, nullptr, &textLocation);
     }
 
     /**
@@ -100,11 +100,11 @@ public:
     static void DrawTextCentered(const std::string& fontFile, SDL_Renderer* renderer, const char* string, int size, int centerX, int centerY, SDL_Color fgC, SDL_Color bgC) {
         SDL_Texture* texture = GetTextTexture(fontFile, renderer, string, size, fgC, bgC);
         SDL_Point textureSize;
-        SDL_QueryTexture(texture, NULL, NULL, &textureSize.x, &textureSize.y);
+        SDL_QueryTexture(texture, nullptr, nullptr, &textureSize.x, &textureSize.y);
         int topLeftX = centerX - textureSize.x / 2;
         int topLeftY = centerY - textureSize.y / 2;
         SDL_Rect textLocation = { topLeftX, topLeftY, textureSize.x, textureSize.y };
-        SDL_RenderCopy(renderer, texture, NULL, &textLocation);
+        SDL_RenderCopy(renderer, texture, nullptr, &textLocation);
     }
 };
 
