@@ -207,9 +207,9 @@ public:
 
 protected:
     static constexpr char* fontFile_ = (char*)"./data/assets/BodoniBold.ttf";
-    static constexpr SDL_Color yellow_ = {.r = 255, .g = 255, .b = 128, .a = 255};
-    static constexpr SDL_Color white_ = {.r = 255, .g = 255, .b = 255, .a = 255};
-    static constexpr SDL_Color black_ = {.r = 0, .g = 0, .b = 0, .a = 255};
+    static constexpr SDL_Color yellow_ = SDL_Color{255, 255, 128, 255};
+    static constexpr SDL_Color white_ = SDL_Color{255, 255, 255, 255};
+    static constexpr SDL_Color black_ = SDL_Color{0, 0, 0, 0};
 };
 
 class IntroScreen : public GameScreen {
