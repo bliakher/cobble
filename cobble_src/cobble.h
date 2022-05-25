@@ -148,47 +148,109 @@ class GameScreen {
 public:
     /**
      * Constructor
-     * @param game
-     * @param width
-     * @param height
-     * @param renderer
+     * @param game Game associated with the screen
+     * @param width Width of the screen
+     * @param height Height of the screen
+     * @param renderer Renderer used to draw on screen
      */
     GameScreen(Game* game, int width, int height, SDL_Renderer* renderer)
             : Game_(game), Width_(width), Height_(height), Renderer_(renderer) {}
+    /**
+     * Game associated with the screen
+     */
     Game* Game_;
+    /**
+     * Width of the screen
+     */
     int Width_;
+    /**
+     * Height of the screen
+     */
     int Height_;
+    /**
+     * Renderer used to draw on screen
+     */
     SDL_Renderer* Renderer_;
+    /**
+     * Initialize the game screen parameters
+     */
     virtual void Init() {}
+    /**
+     * Draw the screen
+     */
     virtual void Draw() {}
+    /**
+     * Update game based on click to the screen
+     * @param mouseX X coordinate of the mouse
+     * @param mouseY Y coordinate of the mouse
+     */
     virtual void UpdateOnClick(int mouseX, int mouseY) {}
 
 protected:
     static constexpr char* fontFile_ = (char*)"./data/assets/BodoniBold.ttf";
+    /**
+     * Predefined color constants
+     */
     static constexpr SDL_Color yellow_ = SDL_Color{255, 255, 128, 255};
     static constexpr SDL_Color white_ = SDL_Color{255, 255, 255, 255};
-    static constexpr SDL_Color black_ = SDL_Color{0, 0, 0, 0};
+    static constexpr SDL_Color black_ = SDL_Color{0, 0, 0, 255};
 };
 
+/**
+ * Introduction screen
+ *
+ * Contains a Start button, waits for player to press the Start button, then starts the game.
+ */
 class IntroScreen : public GameScreen {
 public:
     IntroScreen(Game* game, int width, int height, SDL_Renderer *renderer)
             : GameScreen(game, width, height, renderer) {}
+    /**
+    * Initialize the game screen parameters
+    * Create the Start button
+    */
     void Init() override;
+    /**
+     * Draw screen
+     */
     void Draw() override;
+    /**
+     * Update game based on click to the screen
+     * Check for click on the Start button
+     * @param mouseX X coordinate of the mouse
+     * @param mouseY Y coordinate of the mouse
+     */
     void UpdateOnClick(int mouseX, int mouseY) override;
 
 private:
     Button startButton_;
 };
 
+/**
+ * Gameplay screen
+ *
+ * Contains a deck of cards, which the player interacts with.
+ */
 class PlayScreen : public GameScreen {
 public:
     PlayScreen(Game* game, int width, int height, SDL_Renderer *renderer)
             : GameScreen(game, width, height, renderer),
               leftCardCenterX_(0), rightCardCenterX_(0), cardCenterY_(0), cardRadius_(0) {}
-    void Draw() override;
+    /**
+    * Initialize the game screen parameters
+    * Create a deck of cards, select the first 2 cards
+    */
     void Init() override;
+    /**
+     * Draw screen
+     */
+    void Draw() override;
+    /**
+     * Update game based on click to the screen
+     * Check if user clicked any images, if so if they clicked the right one
+     * @param mouseX X coordinate of the mouse
+     * @param mouseY Y coordinate of the mouse
+     */
     void UpdateOnClick(int mouseX, int mouseY) override;
 
 private:
@@ -205,25 +267,38 @@ private:
     void prepareNextCard();
     void drawBackground();
     void drawHeader();
-    void drawTime();
-    void drawLives();
 };
 
+/**
+ * Outro screen
+ *
+ * Contains 2 buttons - New game and exit
+ */
 class OutroScreen : public GameScreen {
 public:
     OutroScreen(Game* game, int width, int height, SDL_Renderer *renderer)
             : GameScreen(game, width, height, renderer) {}
+    /**
+    * Initialize the game screen parameters
+    * Create the buttons
+    */
     void Init() override;
+    /**
+     * Draw screen
+     */
     void Draw() override;
+    /**
+     * Update game based on click to the screen
+     * Check if any of the buttons was pressed
+     * @param mouseX X coordinate of the mouse
+     * @param mouseY Y coordinate of the mouse
+     */
     void UpdateOnClick(int mouseX, int mouseY) override;
 private:
     static const int BUTTON_MARGIN = 10;
     Button newGameButton_;
     Button exitButton_;
 };
-
-
-
 
 
 #endif //COBBLE_SRC_COBBLE_H

@@ -225,22 +225,16 @@ void PlayScreen::drawBackground() {
     int deckCount = deck_.GetRemainingCardsCount();
     int outlineCount = deckCount >= MAX_CARDS_DISPLAYED ? MAX_CARDS_DISPLAYED : deckCount;
     for (int i = outlineCount; i >= 0; i--) {
-        filledCircleRGBA(Renderer_, (short)(leftCardCenterX_ - (CARD_PADDING / MAX_CARDS_DISPLAYED) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
-        circleRGBA(Renderer_, (short)(leftCardCenterX_ - (CARD_PADDING / MAX_CARDS_DISPLAYED) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
+        filledCircleRGBA(Renderer_, (short)(leftCardCenterX_ - (CARD_PADDING / MAX_CARDS_DISPLAYED) * i), cardCenterY_,
+                         cardRadius_, white_.r, white_.g, white_.b, white_.a); // first white circle
+        circleRGBA(Renderer_, (short)(leftCardCenterX_ - (CARD_PADDING / MAX_CARDS_DISPLAYED) * i), cardCenterY_,
+                   cardRadius_, black_.r, black_.g, black_.b, black_.a); // first circle black border
     }
     // right card
     filledCircleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, white_.r, white_.g, white_.b, white_.a); // second white circle
     circleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, black_.r, black_.g, black_.b, black_.a); // second circle black border
 
     drawHeader();
-}
-
-void PlayScreen::drawTime() {
-    long remainingTime = Game_->GetRemainingTime(); // in milliseconds
-    int minutes = remainingTime / 60000;
-    int seconds = remainingTime / 1000 - minutes * 60;
-    string timeStr = "Remaining time: " + to_string(minutes) + ":" + to_string(seconds);
-    GraphicUtils::DrawText(fontFile_, Renderer_, timeStr.c_str(), 20, 20, 20, black_, yellow_);
 }
 
 string formatTime(int minSec) {

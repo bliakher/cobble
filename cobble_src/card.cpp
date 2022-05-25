@@ -4,7 +4,6 @@
 
 #include "SDL2_rotozoom.h"
 #include "SDL_ttf.h"
-#include "SDL2_gfxPrimitives.h"
 
 using namespace std;
 
