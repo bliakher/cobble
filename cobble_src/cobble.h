@@ -84,7 +84,7 @@ private:
     /**
      * Degree increment for spacing images on cards
      */
-    static const int DEGREE_INCREMENT = 90;
+    static const int DEGREE_INCREMENT = 110;
     Card* card_;
     int centerX_;
     int centerY_;
