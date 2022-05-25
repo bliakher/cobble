@@ -28,10 +28,20 @@ bool isPrime(int number) {
     return true;
 }
 
+/**
+ * Class responsible for parsing user configuration
+ *
+ * Configuration is parsed from the command line arguments,
+ * if those are not available, it is taken from the configuration cache.
+ */
 class ArgParser {
 public:
     std::string ImageDir_;
     int ImagesPerCard_;
+    /**
+     * Parse configuration
+     * @param arg command line arguments
+     */
     void Parse(std::vector<std::string>& arg) {
         if (arg.size() > 1) {
             if (arg.size() == 3) {
@@ -62,7 +72,11 @@ public:
             throw std::invalid_argument("Number of images on card - 1 must be a prime number.");
         }
     }
-    void Help() {
+    /**
+     * Print help
+     */
+    static void Help() {
+        std::cout << "Usage:" << std::endl;
         std::cout << "-i <path> : sets path to the directory with images used in game" << std::endl;
         std::cout << "-c <number> : sets number of images per card" << std::endl;
     }
@@ -78,7 +92,7 @@ private:
             try {
                 ImagesPerCard_ = std::stoi(value);
                 imageCountSet_ = true;
-            } catch (std::exception) {
+            } catch (const std::exception& error) {
                 throw std::invalid_argument("Number of images on card (-c) must be integer but was: " + value);
             }
         } else {
@@ -112,13 +126,23 @@ int main(int argc, char** argv) {
 
     std::vector<std::string> arg(argv, argv + argc);
     ArgParser parser{};
-    parser.Parse(arg);
+
+    try {
+        parser.Parse(arg);
+    } catch (const std::invalid_argument& error) {
+        std::cout << "Configuration couldn't be parsed." << std::endl;
+        std::cout << error.what() << std::endl;
+        ArgParser::Help();
+        SDL_Quit();
+        return 1;
+    }
 
 
-    SDL_Window* window = NULL;                      // The window we are rendering to
-    SDL_Surface* screenSurface = NULL;              // The surface contained by the window
+
+    SDL_Window* window = nullptr;                      // The window we are rendering to
+    SDL_Surface* screenSurface = nullptr;              // The surface contained by the window
     SDL_Event wEvent;                               // Enable the Window Event handler...
-    SDL_Renderer *renderer = NULL;
+    SDL_Renderer *renderer = nullptr;
 
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf( "[ERROR] SDL could not initialize! SDL Error: %s\n", SDL_GetError());
@@ -126,13 +150,13 @@ int main(int argc, char** argv) {
     }
 
     window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (window == NULL) {
+    if (window == nullptr) {
         printf( "[ERROR] Window could not be created! SDL Error: %s\n", SDL_GetError());
         return 1;
     }
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (renderer == NULL)
+    if (renderer == nullptr)
     {
         SDL_DestroyWindow(window);
         printf ("SDL_CreateRenderer Error: %s", SDL_GetError());
