@@ -259,6 +259,7 @@ public:
     void Draw() override;
     void UpdateOnClick(int mouseX, int mouseY) override;
 private:
+    static const int BUTTON_MARGIN = 10;
     Button newGameButton_;
     Button exitButton_;
 };

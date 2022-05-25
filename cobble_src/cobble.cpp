@@ -84,7 +84,7 @@ Image* RenderedCard::GetClickedImage(int mouseX, int mouseY) {
             return &card_->Images_[imageIdx];
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 std::string RenderedCard::GetCommon(const RenderedCard &card) {
@@ -303,10 +303,9 @@ void PlayScreen::drawBackground() {
     // display outline of the deck under the left card
     int deckCount = deck_.GetRemainingCardsCount();
     int outlineCount = deckCount >= MAX_CARDS_DISPLAYED ? MAX_CARDS_DISPLAYED : deckCount;
-    int result = 0;
     for (int i = outlineCount; i >= 0; i--) {
-        result = filledCircleRGBA(Renderer_, (short)(leftCardCenterX_ - (CARD_PADDING / MAX_CARDS_DISPLAYED) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
-        result = circleRGBA(Renderer_, (short)(leftCardCenterX_ - (CARD_PADDING / MAX_CARDS_DISPLAYED) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
+        filledCircleRGBA(Renderer_, (short)(leftCardCenterX_ - (CARD_PADDING / MAX_CARDS_DISPLAYED) * i), cardCenterY_, cardRadius_, 255, 255, 255, 255); // first white circle
+        circleRGBA(Renderer_, (short)(leftCardCenterX_ - (CARD_PADDING / MAX_CARDS_DISPLAYED) * i), cardCenterY_, cardRadius_, 0, 0, 0, 255); // first circle black border
     }
     // right card
     filledCircleRGBA(Renderer_, rightCardCenterX_, cardCenterY_, cardRadius_, white_.r, white_.g, white_.b, white_.a); // second white circle
@@ -400,9 +399,8 @@ void IntroScreen::UpdateOnClick(int mouseX, int mouseY) {
 void OutroScreen::Init() {
     int buttonWidth = Width_ / 4;
     int buttonHeight = Height_ / 12;
-    int margin = 10;
-    int button1TopLeftX = Width_ / 2 - buttonWidth - margin;
-    int button2TopLeftX = button1TopLeftX + buttonWidth + 2 * margin;
+    int button1TopLeftX = Width_ / 2 - buttonWidth - BUTTON_MARGIN;
+    int button2TopLeftX = button1TopLeftX + buttonWidth + 2 * BUTTON_MARGIN;
     int buttonTopLeftY = 3 * Height_ / 4;
     newGameButton_ = {button1TopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "New Game", fontFile_, yellow_, black_};
     exitButton_ = {button2TopLeftX, buttonTopLeftY, buttonWidth, buttonHeight, "Exit", fontFile_, yellow_, black_};
