@@ -14,7 +14,6 @@
 
 class Image {
 public:
-    //Image() {};
     Image(std::string filePath, std::string name) : FilePath_(std::move(filePath)), Name_(std::move(name)) {}
     std::string FilePath_;
     std::string Name_;
@@ -25,7 +24,8 @@ public:
 
 class ImageLoader {
 public:
-    explicit ImageLoader(std::string directoryPath) : DirectoryPath_(std::move(directoryPath)) {}
+    explicit ImageLoader(std::string directoryPath, int imageCount)
+        : DirectoryPath_(std::move(directoryPath)), imageCount_(imageCount) {}
     std::string DirectoryPath_;
     std::vector<Image> Images_{};
     void Load(SDL_Renderer* renderer);
@@ -33,6 +33,7 @@ public:
     static SDL_Surface* LoadSurface(const std::string& filePath, SDL_Renderer* renderer);
 private:
     void findImageFiles();
+    int imageCount_;
 
 };
 

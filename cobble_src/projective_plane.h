@@ -38,7 +38,9 @@ std::ostream& operator << (std::ostream &os, const Point &p);
  * - any 2 lines intersect at exactly 1 point
  *
  * Generating:
- * - n is the order of the plane, n = p - 1, where p is prime
+ * ToDo: rewrite
+ * - n is the order of the plane, n is prime
+ * - n = p - 1, where p is the number
  * - we take triples of numbers from Z_p - (x, y, z), excluding (0, 0, 0)
  * - we define equivalency where (x, y, z) ~ (l*x, l*y, l*z) for some l from Z_p
  * - we define points on the plane as representatives of equivalency classes that have a 1 on the last non-zero coordinate
@@ -50,10 +52,10 @@ std::ostream& operator << (std::ostream &os, const Point &p);
 class ProjectivePlane {
 public:
     /**
-     * @param n order of the plane (n = p - 1, where p is prime)
+     * @param order order of the plane (n = p - 1, where p is prime)
      */
-    explicit ProjectivePlane(int n) : n_(n) {
-        pointCount_ = n * n + n + 1;
+    explicit ProjectivePlane(int order) : n_(order) {
+        pointCount_ = GetSizeFromOrder(order);
     }
     /**
      * Generate the plane of order n.
@@ -74,6 +76,10 @@ public:
     std::vector<LineIdx> ConvertPointsToIdx(const std::vector<LinePoints> & plane);
     int GetPointCount() const {
         return pointCount_;
+    }
+
+    static int GetSizeFromOrder(int order) {
+        return order * order + order + 1;
     }
 
 private:

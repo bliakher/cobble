@@ -57,6 +57,9 @@ void ImageLoader::findImageFiles() {
             Images_.emplace_back(entry.path().string(), entry.path().stem().string());
         }
     }
+    if (Images_.size() < imageCount_) {
+        throw invalid_argument("Not enough images loaded" );
+    }
 }
 
 

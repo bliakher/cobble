@@ -37,19 +37,19 @@ std::string Card::GetCommon(const Card* card) {
 }
 
 void RenderedCard::Init() {
-    srand(time(nullptr));
+    srand(time(nullptr)); // seed based on time
     startDegree_ = rand() % 360; // start on random degree, so every card looks different
     for (int i = 0; i < card_->Images_.size(); ++i) {
-        int imageRotation = rand() % 180; // random angle to rotate image;
+        int imageRotation = rand() % 360; // random angle to rotate image;
         imageRotations_.push_back(imageRotation);
     }
 }
 
 void RenderedCard::Draw(SDL_Renderer *renderer) {
-    // images are place in a spiral, starting from the center outward
+    // images are placed in a spiral, starting from the center outward
     int imageCount = card_->Images_.size();
     int imageSize = radius_ / imageCount; // image size is counted so that images can fit side by side in the radius of the card
-    int radiusIncrement = imageSize / 2; // how much image is moved outward from the previous one
+    int radiusIncrement = imageSize / 2; // how much is image moved outward from the previous one
     int degrees = startDegree_;
     int radiusPart = 0;
     for (int i = 0; i < card_->Images_.size(); ++i) {
@@ -162,7 +162,7 @@ void Game::Update() {
         timeRemaining_ = timeRemaining_ - timeSinceLastUpdate;
         timeRemaining_ = timeRemaining_ >= 0 ? timeRemaining_ : 0;
         lastUpdateTime_ = curTime;
-        cout << timeRemaining_ << endl;
+        // cout << timeRemaining_ << endl;
         if (timeRemaining_ == 0) {
             EndGame();
         }

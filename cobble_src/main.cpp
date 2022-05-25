@@ -2,6 +2,7 @@
 #include "SDL_ttf.h"
 #include "SDL2_gfxPrimitives.h"
 #include "cobble.h"
+#include "projective_plane.h"
 
 #include <stdio.h>
 #include <string>
@@ -129,7 +130,6 @@ int main(int argc, char** argv) {
         printf( "[ERROR] Window could not be created! SDL Error: %s\n", SDL_GetError());
         return 1;
     }
-//    screenSurface = SDL_GetWindowSurface(window);
 
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == NULL)
@@ -140,8 +140,17 @@ int main(int argc, char** argv) {
         return 3;
     }
 
-    ImageLoader loader{parser.ImageDir_};
-    loader.Load(renderer);
+    int imagesCount = ProjectivePlane::GetSizeFromOrder(parser.ImagesPerCard_ - 1);
+
+    ImageLoader loader{parser.ImageDir_, imagesCount};
+    try {
+        loader.Load(renderer);
+    } catch(std::invalid_argument) {
+        std::cout << "Not enough images loaded." << std::endl;
+        std::cout << imagesCount << " images needed but only " << loader.Images_.size() << " loaded from directory " << parser.ImageDir_ << std::endl;
+        SDL_Quit();
+        return 1;
+    }
 
     Game game {SCREEN_WIDTH, SCREEN_HEIGHT, renderer, parser.ImagesPerCard_, loader.Images_};
     game.Init();
